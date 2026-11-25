@@ -161,10 +161,16 @@
     const answered = Object.keys(state.answers).length;
     const correct = Object.values(state.answers).filter((a) => a.isCorrect).length;
     const accuracy = answered > 0 ? Math.round((correct / answered) * 100) : 0;
+    const progressPct = total > 0 ? Math.round((answered / total) * 100) : 0;
 
     document.getElementById("stat-progress").textContent = `${answered} / ${total}`;
     document.getElementById("stat-score").textContent = `${correct} / ${total}`;
     document.getElementById("stat-accuracy").textContent = `${accuracy}%`;
+
+    const fillEl = document.getElementById("topbar-progress-fill");
+    if (fillEl) {
+      fillEl.style.width = `${progressPct}%`;
+    }
 
     const listTitle = document.getElementById("inbox-list-title");
     if (listTitle) {
@@ -608,6 +614,37 @@
     return "";
   }
 
+  function statusSvgForTone(tone) {
+    if (tone === "cell-safe") {
+      return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>';
+    }
+    if (tone === "cell-danger") {
+      return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+    }
+    return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+  }
+
+  function renderRiskRingSvg(score, riskLevel) {
+    const safeScore = Math.max(0, Math.min(100, Number(score) || 0));
+    const radius = 36;
+    const circumference = 2 * Math.PI * radius;
+    const dashOffset = circumference * (1 - safeScore / 100);
+    return `
+      <div class="risk-ring-wrap" aria-label="Điểm rủi ro ${safeScore} trên 100">
+        <svg class="risk-ring-svg" width="88" height="88" viewBox="0 0 88 88" aria-hidden="true">
+          <circle class="risk-ring-bg" cx="44" cy="44" r="${radius}"></circle>
+          <circle class="risk-ring-fg ${escapeHtml(riskLevel)}" cx="44" cy="44" r="${radius}"
+            stroke-dasharray="${circumference.toFixed(2)}"
+            stroke-dashoffset="${dashOffset.toFixed(2)}"></circle>
+        </svg>
+        <div class="risk-ring-center">
+          <span class="risk-ring-num">${safeScore}</span>
+          <span class="risk-ring-max">/ 100</span>
+        </div>
+      </div>
+    `;
+  }
+
   function renderAnalyzerResult(res) {
     const outEl = document.getElementById("analyzer-output");
     outEl.classList.remove("hidden");
@@ -644,44 +681,52 @@
           ? "Không mã hóa (SMTP văn bản rõ)"
           : "Không có thông tin Received";
 
+    const matrixCells = [
+      { label: "SPF", val: res.metadata.auth.spf.toUpperCase(), tone: cellToneForAuth(res.metadata.auth.spf) },
+      { label: "DKIM", val: res.metadata.auth.dkim.toUpperCase(), tone: cellToneForAuth(res.metadata.auth.dkim) },
+      { label: "DMARC", val: res.metadata.auth.dmarc.toUpperCase(), tone: cellToneForAuth(res.metadata.auth.dmarc) },
+      {
+        label: "SPF Alignment",
+        val: res.alignment.spfAligned ? "Đạt" : "Không đạt",
+        tone: res.alignment.spfAligned ? "cell-safe" : "cell-warning"
+      },
+      {
+        label: "DKIM Alignment",
+        val: res.alignment.dkimAligned ? "Đạt" : "Không đạt",
+        tone: res.alignment.dkimAligned ? "cell-safe" : "cell-warning"
+      },
+      {
+        label: "DMARC Alignment",
+        val: res.alignment.dmarcAligned ? "Đạt (PASS)" : "Trượt (FAIL)",
+        tone: res.alignment.dmarcAligned ? "cell-safe" : "cell-danger"
+      }
+    ];
+
+    const matrixHtml = matrixCells
+      .map(
+        (c) => `
+        <div class="auth-cell ${c.tone}">
+          <div class="auth-cell-head">
+            <span class="auth-cell-label">${escapeHtml(c.label)}</span>
+            <span class="auth-cell-icon">${statusSvgForTone(c.tone)}</span>
+          </div>
+          <span class="auth-cell-val">${escapeHtml(c.val)}</span>
+        </div>
+      `
+      )
+      .join("");
+
     outEl.innerHTML = `
-      <div class="risk-score-header ${escapeHtml(res.riskLevel)}">
+      <div class="risk-score-hero ${escapeHtml(res.riskLevel)}">
         <div>
+          <div class="risk-kicker">FORENSIC VERDICT · STATIC HEADER ENGINE</div>
           <div class="risk-headline">${riskLabels[res.riskLevel] || "Không xác định"}</div>
           <div class="risk-subline">${riskHints[res.riskLevel] || ""}</div>
         </div>
-        <div class="risk-gauge-box">
-          <div class="risk-number">${res.riskScore} <small>/ 100</small></div>
-          <div class="risk-bar-track"><div class="risk-bar-fill" style="width:${res.riskScore}%"></div></div>
-        </div>
+        ${renderRiskRingSvg(res.riskScore, res.riskLevel)}
       </div>
 
-      <div class="auth-matrix">
-        <div class="auth-cell ${cellToneForAuth(res.metadata.auth.spf)}">
-          <span class="auth-cell-label">SPF</span>
-          <span class="auth-cell-val">${escapeHtml(res.metadata.auth.spf.toUpperCase())}</span>
-        </div>
-        <div class="auth-cell ${cellToneForAuth(res.metadata.auth.dkim)}">
-          <span class="auth-cell-label">DKIM</span>
-          <span class="auth-cell-val">${escapeHtml(res.metadata.auth.dkim.toUpperCase())}</span>
-        </div>
-        <div class="auth-cell ${cellToneForAuth(res.metadata.auth.dmarc)}">
-          <span class="auth-cell-label">DMARC</span>
-          <span class="auth-cell-val">${escapeHtml(res.metadata.auth.dmarc.toUpperCase())}</span>
-        </div>
-        <div class="auth-cell ${res.alignment.spfAligned ? "cell-safe" : "cell-warning"}">
-          <span class="auth-cell-label">SPF Alignment</span>
-          <span class="auth-cell-val">${res.alignment.spfAligned ? "Đạt" : "Không đạt"}</span>
-        </div>
-        <div class="auth-cell ${res.alignment.dkimAligned ? "cell-safe" : "cell-warning"}">
-          <span class="auth-cell-label">DKIM Alignment</span>
-          <span class="auth-cell-val">${res.alignment.dkimAligned ? "Đạt" : "Không đạt"}</span>
-        </div>
-        <div class="auth-cell ${res.alignment.dmarcAligned ? "cell-safe" : "cell-danger"}">
-          <span class="auth-cell-label">DMARC Alignment</span>
-          <span class="auth-cell-val">${res.alignment.dmarcAligned ? "Đạt (PASS)" : "Trượt (FAIL)"}</span>
-        </div>
-      </div>
+      <div class="auth-matrix">${matrixHtml}</div>
 
       <table class="meta-table">
         <tr><th>From</th><td class="mono-cell">${escapeHtml(res.metadata.from.raw || "(Không có)")}</td></tr>
@@ -699,6 +744,16 @@
     `;
   }
 
+  function setActiveQuickButton(scenarioId) {
+    const quickWrap = document.getElementById("quick-sample-buttons");
+    if (!quickWrap) return;
+    Array.from(quickWrap.children).forEach((btn) => {
+      if (btn && btn.classList) {
+        btn.classList.toggle("active", btn.getAttribute("data-sample-id") === scenarioId);
+      }
+    });
+  }
+
   function setupAnalyzerTab() {
     const quickWrap = document.getElementById("quick-sample-buttons");
     const inputEl = document.getElementById("raw-header-input");
@@ -707,8 +762,10 @@
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "quick-btn";
+      btn.setAttribute("data-sample-id", sc.id);
       btn.textContent = sc.shortLabel;
       btn.addEventListener("click", () => {
+        setActiveQuickButton(sc.id);
         inputEl.value = sc.rawEml;
         if (window.EmailHeaderAnalyzer) {
           renderAnalyzerResult(window.EmailHeaderAnalyzer.analyzeEmail(inputEl.value));
@@ -720,6 +777,7 @@
     document.getElementById("eml-file-input").addEventListener("change", (e) => {
       const file = e.target.files && e.target.files[0];
       if (!file) return;
+      setActiveQuickButton("");
       const reader = new FileReader();
       reader.onload = () => {
         inputEl.value = String(reader.result || "");
@@ -737,6 +795,7 @@
     });
 
     document.getElementById("btn-clear-analyzer").addEventListener("click", () => {
+      setActiveQuickButton("");
       inputEl.value = "";
       document.getElementById("analyzer-output").classList.add("hidden");
     });
@@ -802,6 +861,7 @@
       if (sampleParam) {
         const sc = getScenarios().find((s) => s.id === sampleParam);
         if (sc) {
+          setActiveQuickButton(sc.id);
           const inputEl = document.getElementById("raw-header-input");
           inputEl.value = sc.rawEml;
           if (window.EmailHeaderAnalyzer) {
@@ -842,6 +902,7 @@
         if (!sc) return;
         const inputEl = document.getElementById("raw-header-input");
         inputEl.value = sc.rawEml;
+        setActiveQuickButton(sc.id);
         activateTab("analyzer");
         if (window.EmailHeaderAnalyzer) {
           renderAnalyzerResult(window.EmailHeaderAnalyzer.analyzeEmail(sc.rawEml));
