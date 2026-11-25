@@ -1,0 +1,29 @@
+Return-Path: <it-support@corp-vn.example>
+Received: from mail.corp-vn.example (mail.corp-vn.example [198.51.100.10])
+	by mx.corp-vn.example with ESMTPS (TLSv1.3)
+	for <staff@corp-vn.example>; Wed, 25 Nov 2026 08:15:00 +0700
+Authentication-Results: mx.corp-vn.example;
+	spf=pass (sender IP is 198.51.100.10) smtp.mailfrom=corp-vn.example;
+	dkim=pass header.d=corp-vn.example header.s=mail2026;
+	dmarc=pass action=none header.from=corp-vn.example
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=corp-vn.example;
+	s=mail2026; h=from:to:subject:date:message-id;
+	bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
+	b=SIMULATED_VALID_DKIM_SIGNATURE_FOR_TRAINING_SAMPLE_01
+From: "Phong Ky Thuat IT - CorpVN" <it-support@corp-vn.example>
+To: "Toan the Nhan vien" <staff@corp-vn.example>
+Subject: [Thong bao] Bao tri he thong mang noi bo cuoi tuan (28/11)
+Date: Wed, 25 Nov 2026 08:15:00 +0700
+Message-ID: <20261125081500.001@corp-vn.example>
+MIME-Version: 1.0
+Content-Type: text/html; charset=UTF-8
+
+<html>
+<body>
+  <p>Kinh gui Anh/Chi,</p>
+  <p>Phong Ky thuat IT xin thong bao ke hoach bao tri dinh ky he thong may chu va VPN noi bo tu <strong>22:00 Thu Bay (28/11/2026)</strong> den <strong>02:00 Chu Nhat (29/11/2026)</strong>.</p>
+  <p>Trong thoi gian tren, truy cap he thong ngoai gio lam viec co the gian doan tam thoi. Moi nguoi khong can cung cap mat khau hay ma xac thuc cho bat ky ca nhan nao.</p>
+  <p>Chi tiet trang thai dich vu duoc cap nhat tai cong noi bo: <a href="https://status.corp-vn.example/maintenance">https://status.corp-vn.example/maintenance</a></p>
+  <p>Tran trong,<br>Phong Ky Thuat IT — CorpVN</p>
+</body>
+</html>

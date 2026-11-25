@@ -1,0 +1,39 @@
+Return-Path: <bounce@unknown-sender-44.example>
+Received: from unknown-sender-44.example ([203.0.113.211])
+	by mx.corp-vn.example with SMTP
+	for <ketoan@corp-vn.example>; Wed, 25 Nov 2026 09:35:00 +0700
+Authentication-Results: mx.corp-vn.example;
+	spf=fail smtp.mailfrom=unknown-sender-44.example;
+	dkim=fail reason="signature verification failed";
+	dmarc=fail action=reject header.from=partner-logistics.example
+From: "Bo phan Thanh toan - Doi tac Van tai" <billing@partner-logistics.example>
+To: <ketoan@corp-vn.example>
+Subject: Gui lai Bien lai thanh toan va Hop dong bo sung T11/2026
+Date: Wed, 25 Nov 2026 09:35:00 +0700
+Message-ID: <20261125093500.005@unknown-sender-44.example>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----=_Part_Sample05_Boundary"
+
+------=_Part_Sample05_Boundary
+Content-Type: text/plain; charset=UTF-8
+
+Kinh gui Phong Ke toan,
+
+Chung toi xin gui kem bien lai thanh toan dot 2 va file hop dong bo sung thang 11/2026.
+Vui long mo tep dinh kem BienLai_ThanhToan_2026.pdf.exe hoac HoSo_ChuyenKhoan_2026.docm va chon "Enable Content / Enable Macros" khi duoc hoi de xem day du bang ke chi tiet.
+
+Tran trong,
+Bo phan Thanh toan
+------=_Part_Sample05_Boundary
+Content-Type: text/plain; name="BienLai_ThanhToan_2026.pdf.exe"
+Content-Disposition: attachment; filename="BienLai_ThanhToan_2026.pdf.exe"
+
+[SIMULATED SAFE PLACEHOLDER ONLY - NOT AN EXECUTABLE]
+Day la tep van ban mo phong cho de tai bao mat email. Khong chua ma thuc thi.
+------=_Part_Sample05_Boundary
+Content-Type: text/plain; name="HoSo_ChuyenKhoan_2026.docm"
+Content-Disposition: attachment; filename="HoSo_ChuyenKhoan_2026.docm"
+
+[SIMULATED SAFE PLACEHOLDER ONLY - NO MACRO PAYLOAD]
+Day la tep van ban mo phong cho de tai bao mat email. Khong chua VBA macro.
+------=_Part_Sample05_Boundary--

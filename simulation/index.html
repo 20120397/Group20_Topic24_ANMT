@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mô phỏng Nhận diện Email Lừa đảo — Đề tài 24</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-inner">
+      <div>
+        <h1>Đề tài 24: Mô phỏng Nhận diện Email Giả mạo &amp; Lừa đảo Trực tuyến</h1>
+        <p class="subtitle">Ứng dụng thực hành 100% Offline — Không gửi dữ liệu ra ngoài &amp; Không tải tài nguyên CDN</p>
+      </div>
+      <div class="header-badge">Offline Safe Lab</div>
+    </div>
+    <nav class="tab-nav" aria-label="Điều hướng chức năng">
+      <button type="button" class="tab-btn active" data-tab="inbox">1. Hộp thư Mô phỏng</button>
+      <button type="button" class="tab-btn" data-tab="analyzer">2. Phân tích Email Header</button>
+      <button type="button" class="tab-btn" data-tab="guide">3. Cẩm nang Red Flags</button>
+    </nav>
+  </header>
+
+  <main class="container">
+    <!-- TAB 1: INBOX PHISHING SIMULATOR -->
+    <section id="panel-inbox" class="tab-panel active">
+      <div class="toolbar card">
+        <div class="toolbar-stats">
+          <span class="stat-pill">Tiến độ: <strong id="stat-progress">0 / 6</strong></span>
+          <span class="stat-pill">Điểm số: <strong id="stat-score">0 / 6</strong></span>
+          <span class="stat-pill">Tỷ lệ đúng: <strong id="stat-accuracy">0%</strong></span>
+        </div>
+        <div class="toolbar-actions">
+          <button type="button" id="btn-summary" class="btn-secondary">Xem Báo cáo Tổng kết</button>
+          <button type="button" id="btn-reset" class="btn-outline">Làm lại từ đầu</button>
+        </div>
+      </div>
+
+      <div class="inbox-layout">
+        <aside class="card sidebar">
+          <h2 class="section-title">Hộp thư đến (6 kịch bản)</h2>
+          <div id="scenario-list" class="scenario-list"></div>
+        </aside>
+
+        <article class="card email-viewer" id="email-viewer">
+          <div class="email-top">
+            <div>
+              <h2 id="view-subject" class="email-subject">Chọn một email để kiểm tra</h2>
+              <div class="email-meta-grid">
+                <div><strong>Từ (From):</strong> <span id="view-from"></span></div>
+                <div><strong>Đến (To):</strong> <span id="view-to"></span></div>
+                <div><strong>Ngày gửi:</strong> <span id="view-date"></span></div>
+                <div><strong>Return-Path:</strong> <code id="view-return-path"></code></div>
+                <div id="view-reply-to-row" class="hidden"><strong>Reply-To:</strong> <code id="view-reply-to"></code></div>
+              </div>
+            </div>
+            <div>
+              <button type="button" id="btn-toggle-header" class="btn-secondary">Soi Raw Header &amp; Xác thực</button>
+            </div>
+          </div>
+
+          <div id="raw-header-box" class="raw-header-box hidden">
+            <div class="auth-badges" id="view-auth-badges"></div>
+            <pre id="view-raw-headers"></pre>
+          </div>
+
+          <div class="email-body-wrap">
+            <p class="hover-hint">Mẹo: Rê chuột lên đường dẫn bên dưới để xem URL đích thực tế ở góc dưới trái (không mở trang web thật).</p>
+            <div id="view-body" class="email-body"></div>
+          </div>
+
+          <div id="view-attachments-wrap" class="attachments-wrap hidden">
+            <h3>Tệp đính kèm (Metadata mô phỏng an toàn)</h3>
+            <div id="view-attachments" class="attachment-list"></div>
+          </div>
+
+          <div id="decision-box" class="decision-box">
+            <h3>Đánh giá của bạn về Email này</h3>
+            <div class="verdict-options">
+              <label class="verdict-choice">
+                <input type="radio" name="user-verdict" value="safe">
+                <span>Email An toàn (Hợp lệ)</span>
+              </label>
+              <label class="verdict-choice">
+                <input type="radio" name="user-verdict" value="phishing">
+                <span>Email Lừa đảo / Giả mạo (Phishing / Spoofing)</span>
+              </label>
+            </div>
+
+            <div class="flags-checklist">
+              <p class="flags-label">Chọn các dấu hiệu nhận diện (Red Flags) bạn phát hiện được (tùy chọn):</p>
+              <div class="flags-grid" id="user-flags-grid">
+                <label><input type="checkbox" value="auth_fail"> SPF / DKIM / DMARC thất bại hoặc thiếu</label>
+                <label><input type="checkbox" value="mismatch"> Lệch Return-Path hoặc Reply-To</label>
+                <label><input type="checkbox" value="domain"> Tên miền giả mạo / Punycode / Subdomain</label>
+                <label><input type="checkbox" value="link"> Liên kết hiển thị khác URL đích thật</label>
+                <label><input type="checkbox" value="attachment"> Tệp đính kèm nguy hiểm / Đuôi kép / Macro</label>
+                <label><input type="checkbox" value="social"> Áp lực khẩn cấp / Giả danh lãnh đạo (BEC)</label>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button type="button" id="btn-submit-verdict" class="btn-primary">Gửi phán đoán &amp; Xem giải thích</button>
+            </div>
+          </div>
+
+          <div id="feedback-panel" class="feedback-panel hidden"></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- TAB 2: EMAIL HEADER & SPOOFING ANALYZER -->
+    <section id="panel-analyzer" class="tab-panel">
+      <div class="card">
+        <h2 class="section-title">Phân tích Raw Email Header &amp; Phát hiện Spoofing</h2>
+        <p class="helper-text">Nạp nhanh một kịch bản mẫu, tải lên tệp <code>.eml</code>/<code>.txt</code> từ máy tính hoặc dán trực tiếp Raw Email vào khung dưới để phân tích cục bộ.</p>
+
+        <div class="quick-load-row">
+          <span class="quick-label">Nạp nhanh mẫu:</span>
+          <div id="quick-sample-buttons" class="quick-buttons"></div>
+          <label class="file-upload-btn">
+            Tải file .eml cục bộ
+            <input type="file" id="eml-file-input" accept=".eml,.txt" hidden>
+          </label>
+        </div>
+
+        <textarea id="raw-header-input" rows="11" placeholder="Dán Raw Header hoặc toàn bộ nội dung file .eml vào đây..."></textarea>
+
+        <div class="actions">
+          <button type="button" id="btn-analyze" class="btn-primary">Phân tích ngay</button>
+          <button type="button" id="btn-clear-analyzer" class="btn-outline">Xóa nội dung</button>
+        </div>
+      </div>
+
+      <div id="analyzer-output" class="card analyzer-output hidden"></div>
+    </section>
+
+    <!-- TAB 3: RED FLAGS GUIDE -->
+    <section id="panel-guide" class="tab-panel">
+      <div class="card">
+        <h2 class="section-title">Cẩm nang 5 Bước Kiểm tra Email Đáng ngờ</h2>
+        <ol class="guide-steps">
+          <li><strong>Kiểm tra Địa chỉ gửi thực (<code>From</code> vs <code>Return-Path</code> vs <code>Reply-To</code>):</strong> Không chỉ nhìn tên hiển thị (<em>Display Name</em>). Chú ý các lỗi đánh tráo <code>Reply-To</code> sang hộp thư miễn phí trong tấn công BEC.</li>
+          <li><strong>Quan sát Tên miền (Domain Inspection):</strong> Cảnh giác tên miền gõ nhầm (Typosquatting), ghép từ khóa (Combosquatting), Punycode (<code>xn--</code>) và thủ thuật Subdomain dài (đọc tên miền gốc ngay trước dấu <code>/</code> đầu tiên).</li>
+          <li><strong>Kiểm tra Trạng thái Xác thực (<code>SPF / DKIM / DMARC</code>):</strong> Nếu DMARC hoặc DKIM thất bại (`fail`), không nên tin tưởng email. Lưu ý: <code>SPF=PASS</code> một mình vẫn có thể xảy ra nếu kẻ tấn công tự mua tên miền giả và cấu hình SPF riêng.</li>
+          <li><strong>Rê chuột kiểm tra Liên kết (Hover Before Click):</strong> So sánh URL hiển thị trong nội dung thư với URL đích thực tế trên thanh xem trước trình duyệt; ưu tiên gõ trực tiếp địa chỉ trang chủ thay vì bấm link trong email.</li>
+          <li><strong>Cảnh giác Tệp đính kèm &amp; Đòn tâm lý:</strong> Tuyệt đối không mở tệp có phần mở rộng kép (<code>.pdf.exe</code>), tệp thực thi/script (<code>.exe</code>, <code>.scr</code>, <code>.vbs</code>, <code>.html</code>), tệp Office yêu cầu bấm <em>Enable Macros</em> hoặc file nén đặt mật khẩu né bộ lọc.</li>
+        </ol>
+      </div>
+    </section>
+  </main>
+
+  <!-- URL PREVIEW BAR (Simulated Browser Status Bar) -->
+  <div id="url-preview-bar" class="url-preview-bar hidden" aria-live="polite"></div>
+
+  <!-- SUMMARY REPORT MODAL -->
+  <div id="summary-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Báo cáo Kết quả Mô phỏng Nhận diện Email</h2>
+        <button type="button" id="btn-close-modal" class="btn-outline">Đóng</button>
+      </div>
+      <div id="summary-modal-body"></div>
+    </div>
+  </div>
+
+  <!-- TODO (TV3): Neu bo sung them kich ban moi trong scenarios.js, giao dien se tu dong cap nhat danh sach tu mang EMAIL_SCENARIOS. -->
+  <script src="js/scenarios.js"></script>
+  <script src="js/header_analyzer.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

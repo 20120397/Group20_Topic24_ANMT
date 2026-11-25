@@ -1,0 +1,38 @@
+Return-Path: <hr@corp-vn.example>
+Received: from mail.corp-vn.example (mail.corp-vn.example [198.51.100.10])
+	by mx.corp-vn.example with ESMTPS (TLSv1.3)
+	for <staff@corp-vn.example>; Wed, 25 Nov 2026 09:50:00 +0700
+Authentication-Results: mx.corp-vn.example;
+	spf=pass (sender IP is 198.51.100.10) smtp.mailfrom=corp-vn.example;
+	dkim=pass header.d=corp-vn.example header.s=mail2026;
+	dmarc=pass action=none header.from=corp-vn.example
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=corp-vn.example;
+	s=mail2026; h=from:to:subject:date:message-id;
+	bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
+	b=SIMULATED_VALID_DKIM_SIGNATURE_FOR_TRAINING_SAMPLE_06
+From: "Phong Nhan Su - CorpVN" <hr@corp-vn.example>
+To: "Toan the Nhan vien" <staff@corp-vn.example>
+Subject: Lich kham suc khoe dinh ky nam 2026 cho nhan vien
+Date: Wed, 25 Nov 2026 09:50:00 +0700
+Message-ID: <20261125095000.006@corp-vn.example>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----=_Part_Sample06_Boundary"
+
+------=_Part_Sample06_Boundary
+Content-Type: text/html; charset=UTF-8
+
+<html>
+<body>
+  <p>Chao Anh/Chi,</p>
+  <p>Phong Nhan Su gui kem ke hoach kham suc khoe dinh ky nam 2026 (thoi gian tu 05/12 den 12/12/2026).</p>
+  <p>Anh/Chi vui long xem chi tiet khung gio theo phong ban trong file PDF dinh kem va dang ky ca kham tren cong noi bo: <a href="https://portal.corp-vn.example/hr/health-check">https://portal.corp-vn.example/hr/health-check</a></p>
+  <p>Tran trong,<br>Phong Nhan Su — CorpVN</p>
+</body>
+</html>
+------=_Part_Sample06_Boundary
+Content-Type: text/plain; name="Lich_Kham_Suc_Khoe_2026.pdf"
+Content-Disposition: attachment; filename="Lich_Kham_Suc_Khoe_2026.pdf"
+
+[SIMULATED SAFE PLACEHOLDER ONLY - LEGITIMATE PDF METADATA]
+Noi dung mo phong lich kham suc khoe dinh ky nam 2026.
+------=_Part_Sample06_Boundary--

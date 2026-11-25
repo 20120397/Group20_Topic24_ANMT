@@ -1,0 +1,25 @@
+Return-Path: <bounce@xn--micrsoft-7ya.example>
+Received: from mail.xn--micrsoft-7ya.example ([198.51.100.77])
+	by mx.corp-vn.example with ESMTPS (TLSv1.2)
+	for <user@corp-vn.example>; Wed, 25 Nov 2026 09:20:00 +0700
+Authentication-Results: mx.corp-vn.example;
+	spf=pass (198.51.100.77 is permitted by xn--micrsoft-7ya.example) smtp.mailfrom=xn--micrsoft-7ya.example;
+	dkim=none;
+	dmarc=none header.from=xn--micrsoft-7ya.example
+From: "Microsoft 365 Account Team" <security@xn--micrsoft-7ya.example>
+To: <user@corp-vn.example>
+Subject: Canh bao dang nhap bat thuong - Yeu cau xac minh mat khau
+Date: Wed, 25 Nov 2026 09:20:00 +0700
+Message-ID: <20261125092000.004@xn--micrsoft-7ya.example>
+MIME-Version: 1.0
+Content-Type: text/html; charset=UTF-8
+
+<html>
+<body>
+  <p>Xin chao,</p>
+  <p>He thong Microsoft 365 ghi nhan mot phien dang nhap moi tu dia chi IP nuoc ngoai. Neu day khong phai la ban, hay doi mat khau ngay tai cong xac minh:</p>
+  <p><a href="https://login.microsoft.example.account-reset-portal.example/oauth">https://login.microsoft.example/verify</a></p>
+  <p>Luu y: Bo qua email nay co the dan den mat quyen truy cap hop thu cong ty.</p>
+  <p>Microsoft Security Team</p>
+</body>
+</html>

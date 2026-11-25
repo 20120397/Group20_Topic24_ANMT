@@ -1,0 +1,25 @@
+Return-Path: <bounce@promo-mailer-99.example>
+Received: from host88.promo-mailer-99.example ([203.0.113.88])
+	by mx.corp-vn.example with SMTP
+	for <khachhang@corp-vn.example>; Wed, 25 Nov 2026 08:42:10 +0700
+Authentication-Results: mx.corp-vn.example;
+	spf=fail (203.0.113.88 is not authorized to send for vcb-bank.example) smtp.mailfrom=promo-mailer-99.example;
+	dkim=none;
+	dmarc=fail action=quarantine header.from=vcb-bank.example
+From: "VCB Digibank Security" <no-reply@vcb-bank.example>
+To: <khachhang@corp-vn.example>
+Subject: [KHAN CAP] Tai khoan cua ban se bi KHOA sau 02 gio!
+Date: Wed, 25 Nov 2026 08:42:10 +0700
+Message-ID: <20261125084210.002@promo-mailer-99.example>
+MIME-Version: 1.0
+Content-Type: text/html; charset=UTF-8
+
+<html>
+<body>
+  <p>Kinh gui Quy khach hang,</p>
+  <p>He thong phat hien hoat dong dang nhap bat thuong tu thiet bi la. Tai khoan VCB Digibank cua Quy khach se bi <strong>TAM KHOA VINH VIEN SAU 02 GIO</strong> neu khong xac minh ngay lap tuc.</p>
+  <p>Vui long truy cap lien ket duoi day de xac nhan thong tin the va ma OTP:</p>
+  <p><a href="http://vcb-security-check.login-verify.example/auth">https://vcb-bank.example/verify</a></p>
+  <p>Bo phan Bao mat Ngan hang</p>
+</body>
+</html>
