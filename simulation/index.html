@@ -39,7 +39,7 @@
 
       <div class="inbox-layout">
         <aside class="card sidebar">
-          <h2 class="section-title">Hộp thư đến (6 kịch bản)</h2>
+          <h2 class="section-title" id="inbox-list-title">Hộp thư đến</h2>
           <div id="scenario-list" class="scenario-list"></div>
         </aside>
 
@@ -55,8 +55,9 @@
                 <div id="view-reply-to-row" class="hidden"><strong>Reply-To:</strong> <code id="view-reply-to"></code></div>
               </div>
             </div>
-            <div>
+            <div class="email-top-actions">
               <button type="button" id="btn-toggle-header" class="btn-secondary">Soi Raw Header &amp; Xác thực</button>
+              <button type="button" id="btn-send-to-analyzer" class="btn-outline">Phân tích sâu ở Tab 2 &rarr;</button>
             </div>
           </div>
 
@@ -143,7 +144,7 @@
         <ol class="guide-steps">
           <li><strong>Kiểm tra Địa chỉ gửi thực (<code>From</code> vs <code>Return-Path</code> vs <code>Reply-To</code>):</strong> Không chỉ nhìn tên hiển thị (<em>Display Name</em>). Chú ý các lỗi đánh tráo <code>Reply-To</code> sang hộp thư miễn phí trong tấn công BEC.</li>
           <li><strong>Quan sát Tên miền (Domain Inspection):</strong> Cảnh giác tên miền gõ nhầm (Typosquatting), ghép từ khóa (Combosquatting), Punycode (<code>xn--</code>) và thủ thuật Subdomain dài (đọc tên miền gốc ngay trước dấu <code>/</code> đầu tiên).</li>
-          <li><strong>Kiểm tra Trạng thái Xác thực (<code>SPF / DKIM / DMARC</code>):</strong> Nếu DMARC hoặc DKIM thất bại (`fail`), không nên tin tưởng email. Lưu ý: <code>SPF=PASS</code> một mình vẫn có thể xảy ra nếu kẻ tấn công tự mua tên miền giả và cấu hình SPF riêng.</li>
+          <li><strong>Kiểm tra Trạng thái Xác thực (<code>SPF / DKIM / DMARC</code>):</strong> Nếu DMARC hoặc DKIM thất bại (<code>fail</code>), không nên tin tưởng email. Lưu ý: <code>SPF=PASS</code> một mình vẫn có thể xảy ra nếu kẻ tấn công tự mua tên miền giả và cấu hình SPF riêng.</li>
           <li><strong>Rê chuột kiểm tra Liên kết (Hover Before Click):</strong> So sánh URL hiển thị trong nội dung thư với URL đích thực tế trên thanh xem trước trình duyệt; ưu tiên gõ trực tiếp địa chỉ trang chủ thay vì bấm link trong email.</li>
           <li><strong>Cảnh giác Tệp đính kèm &amp; Đòn tâm lý:</strong> Tuyệt đối không mở tệp có phần mở rộng kép (<code>.pdf.exe</code>), tệp thực thi/script (<code>.exe</code>, <code>.scr</code>, <code>.vbs</code>, <code>.html</code>), tệp Office yêu cầu bấm <em>Enable Macros</em> hoặc file nén đặt mật khẩu né bộ lọc.</li>
         </ol>
@@ -162,10 +163,20 @@
         <button type="button" id="btn-close-modal" class="btn-outline">Đóng</button>
       </div>
       <div id="summary-modal-body"></div>
+
+      <div class="export-box">
+        <h3>Xuất dòng kết quả khảo sát (Bảng 5.4.2 — Chương 5)</h3>
+        <p class="helper-text">Nhập tên người thử nghiệm và bấm sao chép để dán trực tiếp vào bảng đánh giá thực nghiệm trong báo cáo.</p>
+        <div class="export-controls">
+          <input type="text" id="tester-name-input" class="text-input" placeholder="Tên người thử nghiệm (VD: TV1 / Bạn A)">
+          <button type="button" id="btn-copy-md-row" class="btn-primary">Copy dòng kết quả Markdown</button>
+          <span id="copy-status-msg" class="copy-status"></span>
+        </div>
+        <textarea id="md-export-preview" class="md-export-preview" rows="2" readonly></textarea>
+      </div>
     </div>
   </div>
 
-  <!-- TODO (TV3): Neu bo sung them kich ban moi trong scenarios.js, giao dien se tu dong cap nhat danh sach tu mang EMAIL_SCENARIOS. -->
   <script src="js/scenarios.js"></script>
   <script src="js/header_analyzer.js"></script>
   <script src="js/app.js"></script>
