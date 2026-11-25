@@ -16,11 +16,11 @@
   ];
 
   const SKILL_LABEL_MAP = Object.fromEntries(SKILL_FLAG_META.map((item) => [item.key, item.label]));
-  const SKILL_SHORT_MAP = Object.fromEntries(SKILL_FLAG_META.map((item) => [item.key, item.short]));
 
   const state = {
     currentScenarioId: null,
     headerVisible: false,
+    toastTimer: null,
     answers: {} // scenarioId -> { userVerdict, selectedFlags, isCorrect, caughtFlags, missedFlags, extraFlags }
   };
 
@@ -30,6 +30,40 @@
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;");
+  }
+
+  function getInitials(name) {
+    const words = String(name || "")
+      .replace(/[^a-zA-Z0-9\u00C0-\u024F\s]/g, " ")
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean);
+    if (words.length === 0) return "EM";
+    if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+    return (words[0][0] + words[words.length - 1][0]).toUpperCase();
+  }
+
+  function getAvatarToneIndex(id) {
+    let hash = 0;
+    const str = String(id || "");
+    for (let i = 0; i < str.length; i++) {
+      hash = (hash * 31 + str.charCodeAt(i)) % 6;
+    }
+    return Math.abs(hash) % 6;
+  }
+
+  function formatHighlightedHeaders(rawEml) {
+    const text = String(rawEml || "");
+    const splitIdx = text.search(/\r?\n\r?\n/);
+    const headerPart = splitIdx >= 0 ? text.slice(0, splitIdx) : text;
+    const bodyPart = splitIdx >= 0 ? text.slice(splitIdx) : "";
+
+    const highlightedHeader = escapeHtml(headerPart)
+      .split(/\r?\n/)
+      .map((line) => line.replace(/^([A-Za-z0-9-]+):/, '<span class="hdr-key">$1:</span>'))
+      .join("\n");
+
+    return highlightedHeader + escapeHtml(bodyPart);
   }
 
   function badgeClassForAuth(val) {
@@ -54,6 +88,46 @@
     return Array.isArray(window.EMAIL_SCENARIOS) ? window.EMAIL_SCENARIOS : [];
   }
 
+  function showSandboxToast(title, detail, tone = "info") {
+    const toast = document.getElementById("sandbox-toast");
+    const titleEl = document.getElementById("toast-title");
+    const detailEl = document.getElementById("toast-detail");
+    if (!toast || !titleEl || !detailEl) return;
+
+    titleEl.textContent = title;
+    detailEl.textContent = detail;
+    toast.classList.remove("hidden", "toast-danger", "toast-safe");
+    if (tone === "danger") toast.classList.add("toast-danger");
+    if (tone === "safe") toast.classList.add("toast-safe");
+
+    if (state.toastTimer) clearTimeout(state.toastTimer);
+    state.toastTimer = setTimeout(() => {
+      toast.classList.add("hidden");
+    }, 5500);
+  }
+
+  function setInlineDecisionError(msg) {
+    const errEl = document.getElementById("decision-error");
+    if (!errEl) return;
+    if (!msg) {
+      errEl.textContent = "";
+      errEl.classList.add("hidden");
+    } else {
+      errEl.textContent = msg;
+      errEl.classList.remove("hidden");
+    }
+  }
+
+  function updateHeaderToggleLabel(isOpen) {
+    const labelEl = document.getElementById("toggle-header-label");
+    if (labelEl) {
+      labelEl.textContent = isOpen ? "Ẩn Raw Header" : "Soi Raw Header & Xác thực";
+    } else {
+      const btn = document.getElementById("btn-toggle-header");
+      if (btn) btn.textContent = isOpen ? "Ẩn Raw Header" : "Soi Raw Header & Xác thực";
+    }
+  }
+
   function activateTab(target) {
     const tabBtns = document.querySelectorAll(".tab-btn");
     const panels = document.querySelectorAll(".tab-panel");
@@ -68,7 +142,15 @@
   function setupTabs() {
     document.querySelectorAll(".tab-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
-        activateTab(btn.getAttribute("data-tab"));
+        const target = btn.getAttribute("data-tab");
+        activateTab(target);
+        try {
+          if (typeof window !== "undefined" && window.history && typeof window.history.replaceState === "function") {
+            window.history.replaceState(null, "", "#" + target);
+          }
+        } catch (_err) {
+          // Ignore under restricted file:// origins
+        }
       });
     });
   }
@@ -97,22 +179,24 @@
 
     scenarios.forEach((sc) => {
       const ans = state.answers[sc.id];
-      let statusBadge = '<span class="badge badge-none">Chưa làm</span>';
-      if (ans) {
-        statusBadge = ans.isCorrect
+      const statusHtml = ans
+        ? ans.isCorrect
           ? '<span class="badge badge-pass">Đúng</span>'
-          : '<span class="badge badge-fail">Sai</span>';
-      }
+          : '<span class="badge badge-fail">Sai</span>'
+        : '<span class="unread-dot" title="Chưa đánh giá"></span>';
 
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "scenario-item" + (sc.id === state.currentScenarioId ? " active" : "");
       btn.innerHTML = `
-        <div class="scenario-item-top">
-          <span class="scenario-sender">${escapeHtml(sc.shortLabel)}</span>
-          ${statusBadge}
-        </div>
-        <span class="scenario-subj">${escapeHtml(sc.subject)}</span>
+        <span class="avatar avatar-tone-${getAvatarToneIndex(sc.id)}" aria-hidden="true">${escapeHtml(getInitials(sc.senderName))}</span>
+        <span class="scenario-body">
+          <span class="scenario-item-top">
+            <span class="scenario-sender">${escapeHtml(sc.shortLabel)}</span>
+            ${statusHtml}
+          </span>
+          <span class="scenario-subj">${escapeHtml(sc.subject)}</span>
+        </span>
       `;
       btn.addEventListener("click", () => selectScenario(sc.id));
       listEl.appendChild(btn);
@@ -124,16 +208,22 @@
     const links = container.querySelectorAll("a[data-url]");
     links.forEach((link) => {
       const targetUrl = link.getAttribute("data-url");
-      link.addEventListener("mouseenter", () => {
+      const showBar = () => {
+        if (!previewBar) return;
         previewBar.textContent = "URL đích thực tế: " + targetUrl;
         previewBar.classList.remove("hidden");
-      });
-      link.addEventListener("mouseleave", () => {
+      };
+      const hideBar = () => {
+        if (!previewBar) return;
         previewBar.classList.add("hidden");
-      });
+      };
+      link.addEventListener("mouseenter", showBar);
+      link.addEventListener("focus", showBar);
+      link.addEventListener("mouseleave", hideBar);
+      link.addEventListener("blur", hideBar);
       link.addEventListener("click", (e) => {
         e.preventDefault();
-        alert("Mô phỏng an toàn: Đã chặn mở liên kết ngoài.\nURL đích của liên kết này là:\n" + targetUrl);
+        showSandboxToast("Đã chặn mở liên kết ngoài (Offline Safe Lab)", "URL đích thực tế: " + targetUrl, "info");
       });
     });
   }
@@ -145,6 +235,15 @@
     return flags
       .map((f) => `<span class="badge badge-inline ${badgeClass}">${escapeHtml(SKILL_LABEL_MAP[f] || f)}</span>`)
       .join("");
+  }
+
+  function findNextScenarioId(currentId) {
+    const scenarios = getScenarios();
+    if (scenarios.length <= 1) return null;
+    const idx = scenarios.findIndex((s) => s.id === currentId);
+    const nextUnanswered = scenarios.find((s) => s.id !== currentId && !state.answers[s.id]);
+    if (nextUnanswered) return nextUnanswered.id;
+    return scenarios[(idx + 1) % scenarios.length].id;
   }
 
   function renderFeedback(sc, ans) {
@@ -203,13 +302,29 @@
       `;
     }
 
+    const nextId = findNextScenarioId(sc.id);
     const itemsHtml = sc.flagsDetail.map((d) => `<li>${escapeHtml(d)}</li>`).join("");
     panel.innerHTML = `
-      <strong>${resultTitle}</strong> — Đáp án đúng: <strong>${actualLabel}</strong> (${escapeHtml(sc.attackType)})
+      <div class="feedback-head">
+        <div><strong>${resultTitle}</strong> — Đáp án đúng: <strong>${actualLabel}</strong></div>
+        <span class="badge badge-neutral">${escapeHtml(sc.attackType)}</span>
+      </div>
       <p>${escapeHtml(sc.explanation)}</p>
       ${flagReviewHtml}
       <ul>${itemsHtml}</ul>
+      ${
+        nextId
+          ? `<div class="feedback-footer">
+               <button type="button" class="btn btn-secondary btn-sm btn-next-scenario" data-next-id="${escapeHtml(nextId)}">Email tiếp theo &rarr;</button>
+             </div>`
+          : ""
+      }
     `;
+
+    const nextBtn = typeof panel.querySelector === "function" ? panel.querySelector(".btn-next-scenario") : null;
+    if (nextBtn) {
+      nextBtn.addEventListener("click", () => selectScenario(nextId));
+    }
   }
 
   function selectScenario(id) {
@@ -218,6 +333,7 @@
 
     state.currentScenarioId = id;
     state.headerVisible = false;
+    setInlineDecisionError("");
     renderScenarioList();
 
     document.getElementById("view-subject").textContent = sc.subject;
@@ -225,6 +341,12 @@
     document.getElementById("view-to").textContent = sc.to;
     document.getElementById("view-date").textContent = sc.date;
     document.getElementById("view-return-path").textContent = sc.returnPath;
+
+    const avatarEl = document.getElementById("view-avatar");
+    if (avatarEl) {
+      avatarEl.textContent = getInitials(sc.senderName);
+      avatarEl.className = `avatar avatar-lg avatar-tone-${getAvatarToneIndex(sc.id)}`;
+    }
 
     const replyRow = document.getElementById("view-reply-to-row");
     if (sc.replyTo) {
@@ -236,7 +358,7 @@
 
     const headerBox = document.getElementById("raw-header-box");
     headerBox.classList.add("hidden");
-    document.getElementById("btn-toggle-header").textContent = "Soi Raw Header & Xác thực";
+    updateHeaderToggleLabel(false);
 
     const badgesEl = document.getElementById("view-auth-badges");
     badgesEl.innerHTML = `
@@ -244,7 +366,7 @@
       <span class="badge ${badgeClassForAuth(sc.auth.dkim)}">DKIM: ${sc.auth.dkim}</span>
       <span class="badge ${badgeClassForAuth(sc.auth.dmarc)}">DMARC: ${sc.auth.dmarc}</span>
     `;
-    document.getElementById("view-raw-headers").textContent = sc.rawEml;
+    document.getElementById("view-raw-headers").innerHTML = formatHighlightedHeaders(sc.rawEml);
 
     const bodyEl = document.getElementById("view-body");
     bodyEl.innerHTML = sc.bodyHtml;
@@ -262,12 +384,19 @@
         const riskClass = badgeClassForAttachmentRisk(a);
         const riskText = a.risk || "Cần kiểm tra trước khi mở";
         chip.innerHTML = `
-          <div><strong>${escapeHtml(a.name)}</strong> <span class="badge badge-inline ${riskClass}">${escapeHtml(riskText)}</span></div>
-          <span class="attachment-meta">${escapeHtml(a.size)} — Bấm để xem cảnh báo an toàn</span>
+          <svg class="attachment-chip-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+          </svg>
+          <span class="attachment-chip-info">
+            <span class="attachment-chip-top"><strong>${escapeHtml(a.name)}</strong> <span class="badge badge-inline ${riskClass}">${escapeHtml(riskText)}</span></span>
+            <span class="attachment-meta">${escapeHtml(a.size)} · Bấm để xem cảnh báo mô phỏng</span>
+          </span>
         `;
         chip.addEventListener("click", () => {
-          alert(
-            `Mô phỏng an toàn: Không tải hoặc mở tệp đính kèm thật.\n\nTên tệp: ${a.name}\nKích thước: ${a.size}\nĐánh giá rủi ro: ${riskText}`
+          showSandboxToast(
+            "Tệp đính kèm mô phỏng (Không tải/thực thi thật)",
+            `${a.name} (${a.size}) — ${riskText}`,
+            riskClass === "badge-danger" ? "danger" : "safe"
           );
         });
         attList.appendChild(chip);
@@ -293,9 +422,10 @@
 
     const checkedRadio = document.querySelector('input[name="user-verdict"]:checked');
     if (!checkedRadio) {
-      alert("Vui lòng chọn 'Email An toàn' hoặc 'Email Lừa đảo / Giả mạo' trước khi gửi.");
+      setInlineDecisionError("Vui lòng chọn kết luận 'Email An toàn' hoặc 'Email Lừa đảo / Giả mạo' trước khi gửi.");
       return;
     }
+    setInlineDecisionError("");
 
     const selectedFlags = Array.from(document.querySelectorAll('#user-flags-grid input[type="checkbox"]:checked')).map(
       (c) => c.value
@@ -389,10 +519,19 @@
     const correctCount = Object.values(state.answers).filter((a) => a.isCorrect).length;
     const pct = scenarios.length > 0 ? Math.round((correctCount / scenarios.length) * 100) : 0;
 
+    const skillStats = computeSkillStats(scenarios);
+    const totalExpectedFlags = skillStats.reduce((sum, s) => sum + s.expected, 0);
+    const totalCaughtFlags = skillStats.reduce((sum, s) => sum + s.caught, 0);
+    const flagCoverage = totalExpectedFlags > 0 ? Math.round((totalCaughtFlags / totalExpectedFlags) * 100) + "%" : "—";
+
     const rows = scenarios
       .map((sc) => {
         const ans = state.answers[sc.id];
-        const status = !ans ? "Chưa làm" : ans.isCorrect ? "Đúng" : "Sai";
+        const statusBadge = !ans
+          ? '<span class="badge badge-none">Chưa làm</span>'
+          : ans.isCorrect
+            ? '<span class="badge badge-pass">Đúng</span>'
+            : '<span class="badge badge-fail">Sai</span>';
         const expectedLen = Array.isArray(sc.expectedFlags) ? sc.expectedFlags.length : 0;
         const flagNote = !ans
           ? "—"
@@ -405,17 +544,16 @@
         return `<tr>
           <td>${escapeHtml(sc.shortLabel)}</td>
           <td>${escapeHtml(sc.attackType)}</td>
-          <td><strong>${status}</strong></td>
+          <td>${statusBadge}</td>
           <td>${escapeHtml(flagNote)}</td>
         </tr>`;
       })
       .join("");
 
-    const skillStats = computeSkillStats(scenarios);
     const skillRows = skillStats
       .map((s) => {
         const rate = s.expected > 0 ? Math.round((s.caught / s.expected) * 100) : null;
-        const rateText = rate === null ? "Chưa gặp" : `${s.caught}/${s.expected} (${rate}%)`;
+        const rateText = rate === null ? "Chưa gặp" : `${s.caught}/${s.expected}`;
         const barWidth = rate === null ? 0 : rate;
         return `<tr>
           <td>${escapeHtml(s.label)}</td>
@@ -431,7 +569,21 @@
       .join("");
 
     document.getElementById("summary-modal-body").innerHTML = `
-      <p>Đã hoàn thành: <strong>${answeredCount}/${scenarios.length}</strong> kịch bản | Chính xác: <strong>${correctCount}/${scenarios.length} (${pct}%)</strong></p>
+      <div class="kpi-grid">
+        <div class="kpi-tile">
+          <div class="kpi-label">Tiến độ thực hành</div>
+          <div class="kpi-val">${answeredCount} / ${scenarios.length}</div>
+        </div>
+        <div class="kpi-tile">
+          <div class="kpi-label">Phán đoán chính xác</div>
+          <div class="kpi-val">${correctCount} / ${scenarios.length} (${pct}%)</div>
+        </div>
+        <div class="kpi-tile">
+          <div class="kpi-label">Độ phủ Red Flags</div>
+          <div class="kpi-val">${flagCoverage}</div>
+        </div>
+      </div>
+
       <table class="meta-table">
         <thead><tr><th>Kịch bản</th><th>Phân loại</th><th>Phán đoán</th><th>Nhận diện Red Flags</th></tr></thead>
         <tbody>${rows}</tbody>
@@ -449,14 +601,27 @@
     document.getElementById("summary-modal").classList.remove("hidden");
   }
 
+  function cellToneForAuth(val) {
+    if (val === "pass") return "cell-safe";
+    if (val === "softfail" || val === "none") return "cell-warning";
+    if (val === "fail") return "cell-danger";
+    return "";
+  }
+
   function renderAnalyzerResult(res) {
     const outEl = document.getElementById("analyzer-output");
     outEl.classList.remove("hidden");
 
     const riskLabels = {
-      safe: "Mức rủi ro THẤP (An toàn)",
+      safe: "Mức rủi ro THẤP (Email An toàn)",
       warning: "CẢNH BÁO (Cần kiểm tra thêm)",
       danger: "NGUY HIỂM CAO (Dấu hiệu Lừa đảo / Spoofing)"
+    };
+
+    const riskHints = {
+      safe: "Các lớp xác thực DNS khớp định danh và không phát hiện dấu hiệu giả mạo.",
+      warning: "Một số chỉ báo chưa chuẩn hoặc thiếu xác thực; cần xác minh thủ công.",
+      danger: "Phát hiện nhiều dấu hiệu kỹ thuật nghiêm trọng (Spoofing, URL ngụy trang hoặc Tệp độc hại)."
     };
 
     const findingsHtml = res.findings
@@ -479,43 +644,57 @@
           ? "Không mã hóa (SMTP văn bản rõ)"
           : "Không có thông tin Received";
 
-    const spfAlignBadge = res.alignment.spfAligned
-      ? '<span class="badge badge-safe">SPF Alignment: Đạt</span>'
-      : '<span class="badge badge-warning">SPF Alignment: Không đạt</span>';
-    const dkimAlignBadge = res.alignment.dkimAligned
-      ? '<span class="badge badge-safe">DKIM Alignment: Đạt</span>'
-      : '<span class="badge badge-warning">DKIM Alignment: Không đạt</span>';
-    const dmarcAlignBadge = res.alignment.dmarcAligned
-      ? '<span class="badge badge-safe">DMARC Alignment: Đạt (PASS)</span>'
-      : '<span class="badge badge-fail">DMARC Alignment: Trượt (FAIL)</span>';
-
     outEl.innerHTML = `
-      <div class="risk-banner ${escapeHtml(res.riskLevel)}">
-        <div><strong>${riskLabels[res.riskLevel] || "Không xác định"}</strong></div>
-        <div>Điểm rủi ro ước lượng: <strong>${res.riskScore} / 100</strong></div>
+      <div class="risk-score-header ${escapeHtml(res.riskLevel)}">
+        <div>
+          <div class="risk-headline">${riskLabels[res.riskLevel] || "Không xác định"}</div>
+          <div class="risk-subline">${riskHints[res.riskLevel] || ""}</div>
+        </div>
+        <div class="risk-gauge-box">
+          <div class="risk-number">${res.riskScore} <small>/ 100</small></div>
+          <div class="risk-bar-track"><div class="risk-bar-fill" style="width:${res.riskScore}%"></div></div>
+        </div>
       </div>
 
-      <div class="auth-badges">
-        <span class="badge ${badgeClassForAuth(res.metadata.auth.spf)}">SPF: ${escapeHtml(res.metadata.auth.spf)}</span>
-        <span class="badge ${badgeClassForAuth(res.metadata.auth.dkim)}">DKIM: ${escapeHtml(res.metadata.auth.dkim)}</span>
-        <span class="badge ${badgeClassForAuth(res.metadata.auth.dmarc)}">DMARC: ${escapeHtml(res.metadata.auth.dmarc)}</span>
-        ${spfAlignBadge}
-        ${dkimAlignBadge}
-        ${dmarcAlignBadge}
+      <div class="auth-matrix">
+        <div class="auth-cell ${cellToneForAuth(res.metadata.auth.spf)}">
+          <span class="auth-cell-label">SPF</span>
+          <span class="auth-cell-val">${escapeHtml(res.metadata.auth.spf.toUpperCase())}</span>
+        </div>
+        <div class="auth-cell ${cellToneForAuth(res.metadata.auth.dkim)}">
+          <span class="auth-cell-label">DKIM</span>
+          <span class="auth-cell-val">${escapeHtml(res.metadata.auth.dkim.toUpperCase())}</span>
+        </div>
+        <div class="auth-cell ${cellToneForAuth(res.metadata.auth.dmarc)}">
+          <span class="auth-cell-label">DMARC</span>
+          <span class="auth-cell-val">${escapeHtml(res.metadata.auth.dmarc.toUpperCase())}</span>
+        </div>
+        <div class="auth-cell ${res.alignment.spfAligned ? "cell-safe" : "cell-warning"}">
+          <span class="auth-cell-label">SPF Alignment</span>
+          <span class="auth-cell-val">${res.alignment.spfAligned ? "Đạt" : "Không đạt"}</span>
+        </div>
+        <div class="auth-cell ${res.alignment.dkimAligned ? "cell-safe" : "cell-warning"}">
+          <span class="auth-cell-label">DKIM Alignment</span>
+          <span class="auth-cell-val">${res.alignment.dkimAligned ? "Đạt" : "Không đạt"}</span>
+        </div>
+        <div class="auth-cell ${res.alignment.dmarcAligned ? "cell-safe" : "cell-danger"}">
+          <span class="auth-cell-label">DMARC Alignment</span>
+          <span class="auth-cell-val">${res.alignment.dmarcAligned ? "Đạt (PASS)" : "Trượt (FAIL)"}</span>
+        </div>
       </div>
 
       <table class="meta-table">
-        <tr><th>From</th><td>${escapeHtml(res.metadata.from.raw || "(Không có)")}</td></tr>
-        <tr><th>Return-Path</th><td>${escapeHtml(res.metadata.returnPath.raw || "(Không có)")}</td></tr>
-        <tr><th>Reply-To</th><td>${escapeHtml(res.metadata.replyTo.raw || "(Không có)")}</td></tr>
+        <tr><th>From</th><td class="mono-cell">${escapeHtml(res.metadata.from.raw || "(Không có)")}</td></tr>
+        <tr><th>Return-Path</th><td class="mono-cell">${escapeHtml(res.metadata.returnPath.raw || "(Không có)")}</td></tr>
+        <tr><th>Reply-To</th><td class="mono-cell">${escapeHtml(res.metadata.replyTo.raw || "(Không có)")}</td></tr>
         <tr><th>Subject</th><td>${escapeHtml(res.metadata.subject || "(Không có)")}</td></tr>
-        <tr><th>DKIM Domain / Selector</th><td>${escapeHtml(res.metadata.dkimDomain || "—")} / ${escapeHtml(res.metadata.dkimSelector || "—")}</td></tr>
-        <tr><th>Số hop Received / IP nguồn</th><td>${res.metadata.receivedCount} hop${res.metadata.senderIp ? " (IP: " + escapeHtml(res.metadata.senderIp) + ")" : ""}</td></tr>
+        <tr><th>DKIM Domain / Selector</th><td class="mono-cell">${escapeHtml(res.metadata.dkimDomain || "—")} / ${escapeHtml(res.metadata.dkimSelector || "—")}</td></tr>
+        <tr><th>Số hop Received / IP nguồn</th><td class="mono-cell">${res.metadata.receivedCount} hop${res.metadata.senderIp ? " (IP: " + escapeHtml(res.metadata.senderIp) + ")" : ""}</td></tr>
         <tr><th>Mã hóa đường truyền (TLS)</th><td>${escapeHtml(tlsText)}</td></tr>
-        <tr><th>Tệp đính kèm phát hiện</th><td>${attText}</td></tr>
+        <tr><th>Tệp đính kèm phát hiện</th><td class="mono-cell">${attText}</td></tr>
       </table>
 
-      <h3>Chi tiết Phát hiện Kỹ thuật</h3>
+      <h3 class="findings-heading">Chi tiết Phát hiện Kỹ thuật (${res.findings.length})</h3>
       <div class="findings-list">${findingsHtml}</div>
     `;
   }
@@ -606,6 +785,44 @@
     }
   }
 
+  function applyInitialRoute() {
+    const hash = typeof window !== "undefined" && window.location && window.location.hash ? window.location.hash : "";
+    if (!hash) return false;
+
+    const clean = hash.replace(/^#/, "");
+    const [tabPart, queryPart] = clean.split("?");
+    let sampleParam = "";
+    if (queryPart) {
+      const m = queryPart.match(/(?:^|&)sample=([^&]+)/);
+      if (m) sampleParam = decodeURIComponent(m[1]);
+    }
+
+    if (tabPart === "analyzer") {
+      activateTab("analyzer");
+      if (sampleParam) {
+        const sc = getScenarios().find((s) => s.id === sampleParam);
+        if (sc) {
+          const inputEl = document.getElementById("raw-header-input");
+          inputEl.value = sc.rawEml;
+          if (window.EmailHeaderAnalyzer) {
+            renderAnalyzerResult(window.EmailHeaderAnalyzer.analyzeEmail(sc.rawEml));
+          }
+        }
+      }
+      return true;
+    }
+    if (tabPart === "guide") {
+      activateTab("guide");
+      return true;
+    }
+    if (tabPart === "inbox" && sampleParam) {
+      activateTab("inbox");
+      selectScenario(sampleParam);
+      return true;
+    }
+    return false;
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
     setupTabs();
     setupAnalyzerTab();
@@ -615,9 +832,7 @@
     document.getElementById("btn-toggle-header").addEventListener("click", () => {
       state.headerVisible = !state.headerVisible;
       document.getElementById("raw-header-box").classList.toggle("hidden", !state.headerVisible);
-      document.getElementById("btn-toggle-header").textContent = state.headerVisible
-        ? "Ẩn Raw Header"
-        : "Soi Raw Header & Xác thực";
+      updateHeaderToggleLabel(state.headerVisible);
     });
 
     const sendBtn = document.getElementById("btn-send-to-analyzer");
@@ -638,10 +853,15 @@
       });
     }
 
+    document.querySelectorAll('input[name="user-verdict"]').forEach((r) => {
+      r.addEventListener("change", () => setInlineDecisionError(""));
+    });
+
     document.getElementById("btn-submit-verdict").addEventListener("click", handleSubmitVerdict);
 
     document.getElementById("btn-reset").addEventListener("click", () => {
       state.answers = {};
+      setInlineDecisionError("");
       updateToolbarStats();
       const scenarios = getScenarios();
       if (scenarios.length > 0) selectScenario(scenarios[0].id);
@@ -652,9 +872,32 @@
       document.getElementById("summary-modal").classList.add("hidden");
     });
 
+    const modalEl = document.getElementById("summary-modal");
+    if (modalEl) {
+      modalEl.addEventListener("click", (e) => {
+        if (e.target === modalEl) {
+          modalEl.classList.add("hidden");
+        }
+      });
+    }
+
+    const closeToastBtn = document.getElementById("btn-close-toast");
+    if (closeToastBtn) {
+      closeToastBtn.addEventListener("click", () => {
+        document.getElementById("sandbox-toast").classList.add("hidden");
+      });
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && modalEl && !modalEl.classList.contains("hidden")) {
+        modalEl.classList.add("hidden");
+      }
+    });
+
     const scenarios = getScenarios();
     if (scenarios.length > 0) {
       selectScenario(scenarios[0].id);
     }
+    applyInitialRoute();
   });
 })();

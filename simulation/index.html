@@ -3,150 +3,288 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mô phỏng Nhận diện Email Lừa đảo — Đề tài 24</title>
+  <title>MailGuard Lab — Mô phỏng Nhận diện Email Lừa đảo (Đề tài 24)</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <header class="app-header">
-    <div class="header-inner">
-      <div>
-        <h1>Đề tài 24: Mô phỏng Nhận diện Email Giả mạo &amp; Lừa đảo Trực tuyến</h1>
-        <p class="subtitle">Ứng dụng thực hành 100% Offline — Không gửi dữ liệu ra ngoài &amp; Không tải tài nguyên CDN</p>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="m9 12 2 2 4-4"/>
+          </svg>
+        </span>
+        <span class="brand-name">MailGuard Lab</span>
+        <span class="brand-sep" aria-hidden="true">/</span>
+        <span class="brand-sub">Đề tài 24 · Bảo mật Email</span>
       </div>
-      <div class="header-badge">Offline Safe Lab</div>
+
+      <nav class="tab-nav" aria-label="Điều hướng chức năng">
+        <button type="button" class="tab-btn active" data-tab="inbox">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/>
+            <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
+          </svg>
+          <span>Hộp thư</span>
+        </button>
+        <button type="button" class="tab-btn" data-tab="analyzer">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="16 18 22 12 16 6"/>
+            <polyline points="8 6 2 12 8 18"/>
+          </svg>
+          <span>Phân tích Header</span>
+        </button>
+        <button type="button" class="tab-btn" data-tab="guide">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+          </svg>
+          <span>Cẩm nang</span>
+        </button>
+      </nav>
+
+      <div class="topbar-meta">
+        <span class="offline-indicator" title="Chạy 100% ngoại tuyến, không gửi dữ liệu ra ngoài">
+          <span class="status-dot" aria-hidden="true"></span>
+          <span>Cục bộ</span>
+        </span>
+        <div class="topbar-stats" aria-label="Tiến độ làm bài">
+          <span class="metric-item"><span class="metric-label">Tiến độ</span> <strong id="stat-progress">0 / 6</strong></span>
+          <span class="metric-divider" aria-hidden="true">·</span>
+          <span class="metric-item"><span class="metric-label">Đúng</span> <strong id="stat-score">0 / 6</strong> <span class="metric-pct">(<span id="stat-accuracy">0%</span>)</span></span>
+        </div>
+        <div class="topbar-actions">
+          <button type="button" id="btn-summary" class="btn btn-secondary btn-sm">Tổng kết</button>
+          <button type="button" id="btn-reset" class="btn btn-ghost btn-sm">Làm lại</button>
+        </div>
+      </div>
     </div>
-    <nav class="tab-nav" aria-label="Điều hướng chức năng">
-      <button type="button" class="tab-btn active" data-tab="inbox">1. Hộp thư Mô phỏng</button>
-      <button type="button" class="tab-btn" data-tab="analyzer">2. Phân tích Email Header</button>
-      <button type="button" class="tab-btn" data-tab="guide">3. Cẩm nang Red Flags</button>
-    </nav>
   </header>
 
-  <main class="container">
+  <main class="workspace">
     <!-- TAB 1: INBOX PHISHING SIMULATOR -->
     <section id="panel-inbox" class="tab-panel active">
-      <div class="toolbar card">
-        <div class="toolbar-stats">
-          <span class="stat-pill">Tiến độ: <strong id="stat-progress">0 / 6</strong></span>
-          <span class="stat-pill">Điểm số: <strong id="stat-score">0 / 6</strong></span>
-          <span class="stat-pill">Tỷ lệ đúng: <strong id="stat-accuracy">0%</strong></span>
-        </div>
-        <div class="toolbar-actions">
-          <button type="button" id="btn-summary" class="btn-secondary">Xem Báo cáo Tổng kết</button>
-          <button type="button" id="btn-reset" class="btn-outline">Làm lại từ đầu</button>
-        </div>
-      </div>
-
-      <div class="inbox-layout">
-        <aside class="card sidebar">
-          <h2 class="section-title" id="inbox-list-title">Hộp thư đến</h2>
+      <div class="inbox-shell">
+        <aside class="inbox-rail" aria-label="Danh sách thư mô phỏng">
+          <div class="rail-header">
+            <h1 class="rail-title" id="inbox-list-title">Hộp thư đến</h1>
+            <span class="rail-hint">Chọn thư để kiểm tra</span>
+          </div>
           <div id="scenario-list" class="scenario-list"></div>
         </aside>
 
-        <article class="card email-viewer" id="email-viewer">
-          <div class="email-top">
-            <div>
-              <h2 id="view-subject" class="email-subject">Chọn một email để kiểm tra</h2>
-              <div class="email-meta-grid">
-                <div><strong>Từ (From):</strong> <span id="view-from"></span></div>
-                <div><strong>Đến (To):</strong> <span id="view-to"></span></div>
-                <div><strong>Ngày gửi:</strong> <span id="view-date"></span></div>
-                <div><strong>Return-Path:</strong> <code id="view-return-path"></code></div>
-                <div id="view-reply-to-row" class="hidden"><strong>Reply-To:</strong> <code id="view-reply-to"></code></div>
+        <article class="reading-pane" id="email-viewer">
+          <header class="mail-header">
+            <div class="mail-subject-row">
+              <h2 id="view-subject" class="mail-subject">Chọn một email để kiểm tra</h2>
+              <div class="mail-actions">
+                <button type="button" id="btn-toggle-header" class="btn btn-secondary btn-sm">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                  </svg>
+                  <span id="toggle-header-label">Soi Raw Header &amp; Xác thực</span>
+                </button>
+                <button type="button" id="btn-send-to-analyzer" class="btn btn-ghost btn-sm">
+                  <span>Phân tích sâu ở Tab 2</span>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                    <polyline points="12 5 19 12 12 19"/>
+                  </svg>
+                </button>
               </div>
             </div>
-            <div class="email-top-actions">
-              <button type="button" id="btn-toggle-header" class="btn-secondary">Soi Raw Header &amp; Xác thực</button>
-              <button type="button" id="btn-send-to-analyzer" class="btn-outline">Phân tích sâu ở Tab 2 &rarr;</button>
+
+            <div class="sender-bar">
+              <div class="sender-identity">
+                <span id="view-avatar" class="avatar avatar-lg" aria-hidden="true">IT</span>
+                <div class="sender-details">
+                  <div class="sender-from-line">
+                    <span class="meta-k">Từ:</span>
+                    <span id="view-from" class="sender-from-val"></span>
+                  </div>
+                  <div class="sender-sub-line">
+                    <span><strong>Đến:</strong> <span id="view-to"></span></span>
+                    <span class="meta-sep" aria-hidden="true">·</span>
+                    <span><strong>Return-Path:</strong> <code id="view-return-path"></code></span>
+                    <span id="view-reply-to-row" class="reply-to-tag hidden">
+                      <span class="meta-sep" aria-hidden="true">·</span>
+                      <strong>Reply-To:</strong> <code id="view-reply-to"></code>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <time id="view-date" class="mail-date"></time>
             </div>
-          </div>
+          </header>
 
           <div id="raw-header-box" class="raw-header-box hidden">
-            <div class="auth-badges" id="view-auth-badges"></div>
+            <div class="raw-header-bar">
+              <span class="raw-header-caption">RAW MIME HEADER &amp; AUTHENTICATION-RESULTS</span>
+              <div class="auth-badges" id="view-auth-badges"></div>
+            </div>
             <pre id="view-raw-headers"></pre>
           </div>
 
-          <div class="email-body-wrap">
-            <p class="hover-hint">Mẹo: Rê chuột lên đường dẫn bên dưới để xem URL đích thực tế ở góc dưới trái (không mở trang web thật).</p>
+          <div class="mail-body-section">
             <div id="view-body" class="email-body"></div>
+            <p class="hover-footnote">Rê chuột hoặc nhấn Tab vào liên kết để kiểm tra URL đích ở góc dưới trái (mọi điều hướng ngoài đều được chặn an toàn).</p>
           </div>
 
-          <div id="view-attachments-wrap" class="attachments-wrap hidden">
-            <h3>Tệp đính kèm (Metadata mô phỏng an toàn)</h3>
+          <div id="view-attachments-wrap" class="attachments-strip hidden">
+            <h3 class="strip-label">Tệp đính kèm (Metadata mô phỏng an toàn)</h3>
             <div id="view-attachments" class="attachment-list"></div>
           </div>
 
-          <div id="decision-box" class="decision-box">
-            <h3>Đánh giá của bạn về Email này</h3>
+          <section id="decision-box" class="assessment-dock" aria-label="Đánh giá email">
+            <div class="dock-header">
+              <h3>Đánh giá của bạn</h3>
+              <span class="dock-sub">Phân loại email và đánh dấu các dấu hiệu bất thường quan sát được</span>
+            </div>
+
             <div class="verdict-options">
-              <label class="verdict-choice">
+              <label class="verdict-card">
                 <input type="radio" name="user-verdict" value="safe">
-                <span>Email An toàn (Hợp lệ)</span>
+                <span class="verdict-icon verdict-icon-safe" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    <path d="m9 12 2 2 4-4"/>
+                  </svg>
+                </span>
+                <span class="verdict-text">
+                  <strong>Email An toàn</strong>
+                  <small>Hợp lệ, xác thực khớp</small>
+                </span>
               </label>
-              <label class="verdict-choice">
+
+              <label class="verdict-card">
                 <input type="radio" name="user-verdict" value="phishing">
-                <span>Email Lừa đảo / Giả mạo (Phishing / Spoofing)</span>
+                <span class="verdict-icon verdict-icon-danger" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                  </svg>
+                </span>
+                <span class="verdict-text">
+                  <strong>Email Lừa đảo / Giả mạo</strong>
+                  <small>Phishing, Spoofing hoặc Mã độc</small>
+                </span>
               </label>
             </div>
 
             <div class="flags-checklist">
-              <p class="flags-label">Chọn các dấu hiệu nhận diện (Red Flags) bạn phát hiện được (tùy chọn):</p>
+              <p class="flags-label">Dấu hiệu nhận diện (Red Flags) — tùy chọn:</p>
               <div class="flags-grid" id="user-flags-grid">
-                <label><input type="checkbox" value="auth_fail"> SPF / DKIM / DMARC thất bại hoặc thiếu</label>
-                <label><input type="checkbox" value="mismatch"> Lệch Return-Path hoặc Reply-To</label>
-                <label><input type="checkbox" value="domain"> Tên miền giả mạo / Punycode / Subdomain</label>
-                <label><input type="checkbox" value="link"> Liên kết hiển thị khác URL đích thật</label>
-                <label><input type="checkbox" value="attachment"> Tệp đính kèm nguy hiểm / Đuôi kép / Macro</label>
-                <label><input type="checkbox" value="social"> Áp lực khẩn cấp / Giả danh lãnh đạo (BEC)</label>
+                <label class="flag-option"><input type="checkbox" value="auth_fail"><span>SPF / DKIM / DMARC thất bại hoặc thiếu</span></label>
+                <label class="flag-option"><input type="checkbox" value="mismatch"><span>Lệch Return-Path hoặc Reply-To</span></label>
+                <label class="flag-option"><input type="checkbox" value="domain"><span>Tên miền giả mạo / Punycode / Subdomain</span></label>
+                <label class="flag-option"><input type="checkbox" value="link"><span>Liên kết hiển thị khác URL đích thật</span></label>
+                <label class="flag-option"><input type="checkbox" value="attachment"><span>Tệp đính kèm nguy hiểm / Đuôi kép / Macro</span></label>
+                <label class="flag-option"><input type="checkbox" value="social"><span>Áp lực khẩn cấp / Giả danh lãnh đạo (BEC)</span></label>
               </div>
             </div>
 
-            <div class="actions">
-              <button type="button" id="btn-submit-verdict" class="btn-primary">Gửi phán đoán &amp; Xem giải thích</button>
-            </div>
-          </div>
+            <p id="decision-error" class="inline-error hidden" role="alert"></p>
 
-          <div id="feedback-panel" class="feedback-panel hidden"></div>
+            <div class="dock-actions">
+              <button type="button" id="btn-submit-verdict" class="btn btn-primary">Gửi phán đoán &amp; Xem giải thích</button>
+            </div>
+
+            <div id="feedback-panel" class="feedback-panel hidden"></div>
+          </section>
         </article>
       </div>
     </section>
 
     <!-- TAB 2: EMAIL HEADER & SPOOFING ANALYZER -->
     <section id="panel-analyzer" class="tab-panel">
-      <div class="card">
-        <h2 class="section-title">Phân tích Raw Email Header &amp; Phát hiện Spoofing</h2>
-        <p class="helper-text">Nạp nhanh một kịch bản mẫu, tải lên tệp <code>.eml</code>/<code>.txt</code> từ máy tính hoặc dán trực tiếp Raw Email vào khung dưới để phân tích cục bộ.</p>
+      <div class="workbench-stack">
+        <div class="surface-panel">
+          <div class="panel-head">
+            <div>
+              <h2 class="panel-title">Phân tích Raw Email Header &amp; Phát hiện Spoofing</h2>
+              <p class="helper-text">Nạp nhanh kịch bản mẫu, chọn tệp <code>.eml</code>/<code>.txt</code> từ máy tính hoặc dán Raw Header để phân tích cục bộ.</p>
+            </div>
+          </div>
 
-        <div class="quick-load-row">
-          <span class="quick-label">Nạp nhanh mẫu:</span>
-          <div id="quick-sample-buttons" class="quick-buttons"></div>
-          <label class="file-upload-btn">
-            Tải file .eml cục bộ
-            <input type="file" id="eml-file-input" accept=".eml,.txt" hidden>
-          </label>
+          <div class="quick-load-row">
+            <span class="quick-label">Nạp nhanh:</span>
+            <div id="quick-sample-buttons" class="quick-buttons"></div>
+            <label class="btn btn-secondary btn-sm file-upload-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              <span>Tải file .eml</span>
+              <input type="file" id="eml-file-input" accept=".eml,.txt" hidden>
+            </label>
+          </div>
+
+          <label for="raw-header-input" class="sr-only">Nội dung Raw Email Header</label>
+          <textarea id="raw-header-input" rows="10" placeholder="Dán Raw Header hoặc toàn bộ nội dung file .eml vào đây..."></textarea>
+
+          <div class="actions">
+            <button type="button" id="btn-analyze" class="btn btn-primary">Phân tích ngay</button>
+            <button type="button" id="btn-clear-analyzer" class="btn btn-ghost">Xóa nội dung</button>
+          </div>
         </div>
 
-        <textarea id="raw-header-input" rows="11" placeholder="Dán Raw Header hoặc toàn bộ nội dung file .eml vào đây..."></textarea>
-
-        <div class="actions">
-          <button type="button" id="btn-analyze" class="btn-primary">Phân tích ngay</button>
-          <button type="button" id="btn-clear-analyzer" class="btn-outline">Xóa nội dung</button>
-        </div>
+        <div id="analyzer-output" class="surface-panel analyzer-output hidden"></div>
       </div>
-
-      <div id="analyzer-output" class="card analyzer-output hidden"></div>
     </section>
 
     <!-- TAB 3: RED FLAGS GUIDE -->
     <section id="panel-guide" class="tab-panel">
-      <div class="card">
-        <h2 class="section-title">Cẩm nang 5 Bước Kiểm tra Email Đáng ngờ</h2>
-        <ol class="guide-steps">
-          <li><strong>Kiểm tra Địa chỉ gửi thực (<code>From</code> vs <code>Return-Path</code> vs <code>Reply-To</code>):</strong> Không chỉ nhìn tên hiển thị (<em>Display Name</em>). Chú ý các lỗi đánh tráo <code>Reply-To</code> sang hộp thư miễn phí trong tấn công BEC.</li>
-          <li><strong>Quan sát Tên miền (Domain Inspection):</strong> Cảnh giác tên miền gõ nhầm (Typosquatting), ghép từ khóa (Combosquatting), Punycode (<code>xn--</code>) và thủ thuật Subdomain dài (đọc tên miền gốc ngay trước dấu <code>/</code> đầu tiên).</li>
-          <li><strong>Kiểm tra Trạng thái Xác thực (<code>SPF / DKIM / DMARC</code>):</strong> Nếu DMARC hoặc DKIM thất bại (<code>fail</code>), không nên tin tưởng email. Lưu ý: <code>SPF=PASS</code> một mình vẫn có thể xảy ra nếu kẻ tấn công tự mua tên miền giả và cấu hình SPF riêng.</li>
-          <li><strong>Rê chuột kiểm tra Liên kết (Hover Before Click):</strong> So sánh URL hiển thị trong nội dung thư với URL đích thực tế trên thanh xem trước trình duyệt; ưu tiên gõ trực tiếp địa chỉ trang chủ thay vì bấm link trong email.</li>
-          <li><strong>Cảnh giác Tệp đính kèm &amp; Đòn tâm lý:</strong> Tuyệt đối không mở tệp có phần mở rộng kép (<code>.pdf.exe</code>), tệp thực thi/script (<code>.exe</code>, <code>.scr</code>, <code>.vbs</code>, <code>.html</code>), tệp Office yêu cầu bấm <em>Enable Macros</em> hoặc file nén đặt mật khẩu né bộ lọc.</li>
+      <div class="surface-panel guide-container">
+        <div class="panel-head">
+          <div>
+            <h2 class="panel-title">Cẩm nang 5 Bước Kiểm tra Email Đáng ngờ</h2>
+            <p class="helper-text">Quy trình chuẩn kết hợp kiểm tra kỹ thuật Header và nhận diện thủ thuật tâm lý trước khi tương tác.</p>
+          </div>
+        </div>
+
+        <ol class="guide-grid">
+          <li class="guide-row">
+            <span class="guide-num" aria-hidden="true">01</span>
+            <div class="guide-content">
+              <h3>Đối chiếu địa chỉ gửi thực (<code>From</code> vs <code>Return-Path</code> vs <code>Reply-To</code>)</h3>
+              <p>Không chỉ nhìn tên hiển thị (<em>Display Name</em>). Kiểm tra tên miền thật sau ký tự <code>@</code> và cảnh giác khi <code>Reply-To</code> điều hướng sang hộp thư cá nhân miễn phí trong tấn công BEC.</p>
+            </div>
+          </li>
+          <li class="guide-row">
+            <span class="guide-num" aria-hidden="true">02</span>
+            <div class="guide-content">
+              <h3>Soi cấu trúc tên miền (Lookalike, Punycode &amp; Subdomain Trick)</h3>
+              <p>Cảnh giác lỗi gõ nhầm (<em>Typosquatting</em>), ghép từ khóa tin cậy (<em>Combosquatting</em>), tiền tố IDN Punycode (<code>xn--</code>) và đường dẫn subdomain dài — luôn đọc phần tên miền gốc ngay trước dấu <code>/</code> đầu tiên.</p>
+            </div>
+          </li>
+          <li class="guide-row">
+            <span class="guide-num" aria-hidden="true">03</span>
+            <div class="guide-content">
+              <h3>Kiểm tra kết quả xác thực &amp; căn chỉnh định danh (<code>SPF / DKIM / DMARC</code>)</h3>
+              <p>Nếu DMARC hoặc DKIM thất bại (<code>fail</code>), tuyệt đối không tin tưởng thư. Lưu ý: <code>SPF=PASS</code> đứng riêng vẫn có thể xuất hiện nếu kẻ tấn công tự mua tên miền giả và cấu hình SPF riêng cho miền đó.</p>
+            </div>
+          </li>
+          <li class="guide-row">
+            <span class="guide-num" aria-hidden="true">04</span>
+            <div class="guide-content">
+              <h3>Kiểm tra liên kết trước khi bấm (Hover Before Click)</h3>
+              <p>So sánh chuỗi hiển thị trong nội dung thư với URL đích thực tế trên thanh xem trước trình duyệt. Khi giao dịch ngân hàng hoặc đổi mật khẩu, hãy tự gõ địa chỉ trang chủ thay vì bấm link trong email.</p>
+            </div>
+          </li>
+          <li class="guide-row">
+            <span class="guide-num" aria-hidden="true">05</span>
+            <div class="guide-content">
+              <h3>Cảnh giác tệp đính kèm nguy hiểm &amp; đòn tâm lý khẩn cấp</h3>
+              <p>Không mở tệp đuôi kép (<code>.pdf.exe</code>), tệp thực thi/script (<code>.exe</code>, <code>.scr</code>, <code>.vbs</code>, <code>.html</code>), tài liệu Office dụ bấm <em>Enable Macros</em> hoặc tệp nén đặt mật khẩu né bộ lọc Gateway.</p>
+            </div>
+          </li>
         </ol>
       </div>
     </section>
@@ -155,12 +293,21 @@
   <!-- URL PREVIEW BAR (Simulated Browser Status Bar) -->
   <div id="url-preview-bar" class="url-preview-bar hidden" aria-live="polite"></div>
 
+  <!-- NON-BLOCKING SANDBOX TOAST -->
+  <div id="sandbox-toast" class="sandbox-toast hidden" role="status" aria-live="polite">
+    <div class="toast-body">
+      <strong id="toast-title"></strong>
+      <p id="toast-detail"></p>
+    </div>
+    <button type="button" id="btn-close-toast" class="toast-close" aria-label="Đóng thông báo">&times;</button>
+  </div>
+
   <!-- SUMMARY REPORT MODAL -->
-  <div id="summary-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+  <div id="summary-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modal-heading">
     <div class="modal-card">
       <div class="modal-header">
-        <h2>Báo cáo Kết quả Mô phỏng Nhận diện Email</h2>
-        <button type="button" id="btn-close-modal" class="btn-outline">Đóng</button>
+        <h2 id="modal-heading">Báo cáo Kết quả Mô phỏng Nhận diện Email</h2>
+        <button type="button" id="btn-close-modal" class="btn btn-ghost btn-sm">Đóng</button>
       </div>
       <div id="summary-modal-body"></div>
 
@@ -168,10 +315,12 @@
         <h3>Xuất dòng kết quả khảo sát (Bảng 5.4.2 — Chương 5)</h3>
         <p class="helper-text">Nhập tên người thử nghiệm và bấm sao chép để dán trực tiếp vào bảng đánh giá thực nghiệm trong báo cáo.</p>
         <div class="export-controls">
+          <label for="tester-name-input" class="sr-only">Tên người thử nghiệm</label>
           <input type="text" id="tester-name-input" class="text-input" placeholder="Tên người thử nghiệm (VD: TV1 / Bạn A)">
-          <button type="button" id="btn-copy-md-row" class="btn-primary">Copy dòng kết quả Markdown</button>
-          <span id="copy-status-msg" class="copy-status"></span>
+          <button type="button" id="btn-copy-md-row" class="btn btn-primary btn-sm">Copy dòng kết quả Markdown</button>
+          <span id="copy-status-msg" class="copy-status" aria-live="polite"></span>
         </div>
+        <label for="md-export-preview" class="sr-only">Dòng Markdown kết quả</label>
         <textarea id="md-export-preview" class="md-export-preview" rows="2" readonly></textarea>
       </div>
     </div>
