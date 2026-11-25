@@ -121,10 +121,10 @@
   function updateHeaderToggleLabel(isOpen) {
     const labelEl = document.getElementById("toggle-header-label");
     if (labelEl) {
-      labelEl.textContent = isOpen ? "Ẩn Raw Header" : "Soi Raw Header & Xác thực";
+      labelEl.textContent = isOpen ? "Ẩn Raw Header" : "Soi Raw Header";
     } else {
       const btn = document.getElementById("btn-toggle-header");
-      if (btn) btn.textContent = isOpen ? "Ẩn Raw Header" : "Soi Raw Header & Xác thực";
+      if (btn) btn.textContent = isOpen ? "Ẩn Raw Header" : "Soi Raw Header";
     }
   }
 
@@ -176,6 +176,12 @@
     if (listTitle) {
       listTitle.textContent = `Hộp thư đến (${total} kịch bản)`;
     }
+
+    const unreadPill = document.getElementById("rail-unread-count");
+    if (unreadPill) {
+      const remaining = Math.max(0, total - answered);
+      unreadPill.textContent = remaining === 0 ? "Hoàn tất" : `${remaining} chờ xét`;
+    }
   }
 
   function renderScenarioList() {
@@ -198,9 +204,10 @@
         <span class="avatar avatar-tone-${getAvatarToneIndex(sc.id)}" aria-hidden="true">${escapeHtml(getInitials(sc.senderName))}</span>
         <span class="scenario-body">
           <span class="scenario-item-top">
-            <span class="scenario-sender">${escapeHtml(sc.shortLabel)}</span>
+            <span class="scenario-sender">${escapeHtml(sc.senderName || sc.shortLabel)}</span>
             ${statusHtml}
           </span>
+          <span class="scenario-tag-mini">${escapeHtml(sc.shortLabel)}</span>
           <span class="scenario-subj">${escapeHtml(sc.subject)}</span>
         </span>
       `;
@@ -321,7 +328,7 @@
       ${
         nextId
           ? `<div class="feedback-footer">
-               <button type="button" class="btn btn-secondary btn-sm btn-next-scenario" data-next-id="${escapeHtml(nextId)}">Email tiếp theo &rarr;</button>
+               <button type="button" class="btn btn-secondary btn-xs btn-next-scenario" data-next-id="${escapeHtml(nextId)}">Email tiếp theo &rarr;</button>
              </div>`
           : ""
       }
@@ -334,13 +341,27 @@
   }
 
   function selectScenario(id) {
-    const sc = getScenarios().find((item) => item.id === id);
+    const scenarios = getScenarios();
+    const idx = scenarios.findIndex((item) => item.id === id);
+    const sc = idx >= 0 ? scenarios[idx] : null;
     if (!sc) return;
 
     state.currentScenarioId = id;
     state.headerVisible = false;
     setInlineDecisionError("");
     renderScenarioList();
+
+    const posEl = document.getElementById("mail-position-label");
+    if (posEl) posEl.textContent = `Thư ${idx + 1} / ${scenarios.length}`;
+
+    const prevBtn = document.getElementById("btn-prev-mail");
+    if (prevBtn) prevBtn.disabled = idx <= 0;
+
+    const nextBtn = document.getElementById("btn-next-mail");
+    if (nextBtn) nextBtn.disabled = idx >= scenarios.length - 1;
+
+    const tagEl = document.getElementById("inspector-scenario-tag");
+    if (tagEl) tagEl.textContent = sc.shortLabel;
 
     document.getElementById("view-subject").textContent = sc.subject;
     document.getElementById("view-from").textContent = `${sc.senderName} <${sc.senderEmail}>`;
@@ -390,7 +411,7 @@
         const riskClass = badgeClassForAttachmentRisk(a);
         const riskText = a.risk || "Cần kiểm tra trước khi mở";
         chip.innerHTML = `
-          <svg class="attachment-chip-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <svg class="attachment-chip-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
           </svg>
           <span class="attachment-chip-info">
@@ -428,7 +449,7 @@
 
     const checkedRadio = document.querySelector('input[name="user-verdict"]:checked');
     if (!checkedRadio) {
-      setInlineDecisionError("Vui lòng chọn kết luận 'Email An toàn' hoặc 'Email Lừa đảo / Giả mạo' trước khi gửi.");
+      setInlineDecisionError("Vui lòng chọn kết luận 'Email An toàn' hoặc 'Lừa đảo / Giả mạo' trước khi gửi.");
       return;
     }
     setInlineDecisionError("");
@@ -616,24 +637,24 @@
 
   function statusSvgForTone(tone) {
     if (tone === "cell-safe") {
-      return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>';
+      return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>';
     }
     if (tone === "cell-danger") {
-      return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+      return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
     }
-    return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+    return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
   }
 
   function renderRiskRingSvg(score, riskLevel) {
     const safeScore = Math.max(0, Math.min(100, Number(score) || 0));
-    const radius = 36;
+    const radius = 32;
     const circumference = 2 * Math.PI * radius;
     const dashOffset = circumference * (1 - safeScore / 100);
     return `
       <div class="risk-ring-wrap" aria-label="Điểm rủi ro ${safeScore} trên 100">
-        <svg class="risk-ring-svg" width="88" height="88" viewBox="0 0 88 88" aria-hidden="true">
-          <circle class="risk-ring-bg" cx="44" cy="44" r="${radius}"></circle>
-          <circle class="risk-ring-fg ${escapeHtml(riskLevel)}" cx="44" cy="44" r="${radius}"
+        <svg class="risk-ring-svg" width="78" height="78" viewBox="0 0 78 78" aria-hidden="true">
+          <circle class="risk-ring-bg" cx="39" cy="39" r="${radius}"></circle>
+          <circle class="risk-ring-fg ${escapeHtml(riskLevel)}" cx="39" cy="39" r="${radius}"
             stroke-dasharray="${circumference.toFixed(2)}"
             stroke-dashoffset="${dashOffset.toFixed(2)}"></circle>
         </svg>
@@ -646,6 +667,9 @@
   }
 
   function renderAnalyzerResult(res) {
+    const emptyEl = document.getElementById("analyzer-empty");
+    if (emptyEl) emptyEl.classList.add("hidden");
+
     const outEl = document.getElementById("analyzer-output");
     outEl.classList.remove("hidden");
 
@@ -658,7 +682,7 @@
     const riskHints = {
       safe: "Các lớp xác thực DNS khớp định danh và không phát hiện dấu hiệu giả mạo.",
       warning: "Một số chỉ báo chưa chuẩn hoặc thiếu xác thực; cần xác minh thủ công.",
-      danger: "Phát hiện nhiều dấu hiệu kỹ thuật nghiêm trọng (Spoofing, URL ngụy trang hoặc Tệp độc hại)."
+      danger: "Phát hiện dấu hiệu kỹ thuật nghiêm trọng (Spoofing, URL ngụy trang hoặc Tệp độc hại)."
     };
 
     const findingsHtml = res.findings
@@ -716,10 +740,40 @@
       )
       .join("");
 
+    const metaPairs = [
+      { k: "From", v: res.metadata.from.raw || "(Không có)", mono: true },
+      { k: "Return-Path", v: res.metadata.returnPath.raw || "(Không có)", mono: true },
+      { k: "Reply-To", v: res.metadata.replyTo.raw || "(Không có)", mono: true },
+      { k: "Subject", v: res.metadata.subject || "(Không có)", mono: false },
+      {
+        k: "DKIM Domain / Selector",
+        v: `${res.metadata.dkimDomain || "—"} / ${res.metadata.dkimSelector || "—"}`,
+        mono: true
+      },
+      {
+        k: "Received / IP nguồn",
+        v: `${res.metadata.receivedCount} hop${res.metadata.senderIp ? " (" + res.metadata.senderIp + ")" : ""}`,
+        mono: true
+      },
+      { k: "Mã hóa đường truyền (TLS)", v: tlsText, mono: false },
+      { k: "Tệp đính kèm", v: attText, mono: true }
+    ];
+
+    const metaGridHtml = metaPairs
+      .map(
+        (m) => `
+        <div class="meta-kv-item">
+          <div class="meta-kv-k">${escapeHtml(m.k)}</div>
+          <div class="meta-kv-v${m.mono ? " mono" : ""}">${escapeHtml(m.v)}</div>
+        </div>
+      `
+      )
+      .join("");
+
     outEl.innerHTML = `
-      <div class="risk-score-hero ${escapeHtml(res.riskLevel)}">
+      <div class="risk-score-header ${escapeHtml(res.riskLevel)}">
         <div>
-          <div class="risk-kicker">FORENSIC VERDICT · STATIC HEADER ENGINE</div>
+          <div class="risk-kicker">KẾT QUẢ KIỂM TRA HEADER TĨNH</div>
           <div class="risk-headline">${riskLabels[res.riskLevel] || "Không xác định"}</div>
           <div class="risk-subline">${riskHints[res.riskLevel] || ""}</div>
         </div>
@@ -728,16 +782,7 @@
 
       <div class="auth-matrix">${matrixHtml}</div>
 
-      <table class="meta-table">
-        <tr><th>From</th><td class="mono-cell">${escapeHtml(res.metadata.from.raw || "(Không có)")}</td></tr>
-        <tr><th>Return-Path</th><td class="mono-cell">${escapeHtml(res.metadata.returnPath.raw || "(Không có)")}</td></tr>
-        <tr><th>Reply-To</th><td class="mono-cell">${escapeHtml(res.metadata.replyTo.raw || "(Không có)")}</td></tr>
-        <tr><th>Subject</th><td>${escapeHtml(res.metadata.subject || "(Không có)")}</td></tr>
-        <tr><th>DKIM Domain / Selector</th><td class="mono-cell">${escapeHtml(res.metadata.dkimDomain || "—")} / ${escapeHtml(res.metadata.dkimSelector || "—")}</td></tr>
-        <tr><th>Số hop Received / IP nguồn</th><td class="mono-cell">${res.metadata.receivedCount} hop${res.metadata.senderIp ? " (IP: " + escapeHtml(res.metadata.senderIp) + ")" : ""}</td></tr>
-        <tr><th>Mã hóa đường truyền (TLS)</th><td>${escapeHtml(tlsText)}</td></tr>
-        <tr><th>Tệp đính kèm phát hiện</th><td class="mono-cell">${attText}</td></tr>
-      </table>
+      <div class="meta-kv-grid">${metaGridHtml}</div>
 
       <h3 class="findings-heading">Chi tiết Phát hiện Kỹ thuật (${res.findings.length})</h3>
       <div class="findings-list">${findingsHtml}</div>
@@ -798,6 +843,8 @@
       setActiveQuickButton("");
       inputEl.value = "";
       document.getElementById("analyzer-output").classList.add("hidden");
+      const emptyEl = document.getElementById("analyzer-empty");
+      if (emptyEl) emptyEl.classList.remove("hidden");
     });
   }
 
@@ -894,6 +941,24 @@
       document.getElementById("raw-header-box").classList.toggle("hidden", !state.headerVisible);
       updateHeaderToggleLabel(state.headerVisible);
     });
+
+    const prevMailBtn = document.getElementById("btn-prev-mail");
+    if (prevMailBtn) {
+      prevMailBtn.addEventListener("click", () => {
+        const scenarios = getScenarios();
+        const idx = scenarios.findIndex((s) => s.id === state.currentScenarioId);
+        if (idx > 0) selectScenario(scenarios[idx - 1].id);
+      });
+    }
+
+    const nextMailBtn = document.getElementById("btn-next-mail");
+    if (nextMailBtn) {
+      nextMailBtn.addEventListener("click", () => {
+        const scenarios = getScenarios();
+        const idx = scenarios.findIndex((s) => s.id === state.currentScenarioId);
+        if (idx >= 0 && idx < scenarios.length - 1) selectScenario(scenarios[idx + 1].id);
+      });
+    }
 
     const sendBtn = document.getElementById("btn-send-to-analyzer");
     if (sendBtn) {

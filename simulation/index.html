@@ -11,33 +11,33 @@
     <div class="topbar-inner">
       <div class="brand">
         <span class="brand-mark" aria-hidden="true">
-          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
             <path d="m9 12 2 2 4-4"/>
           </svg>
         </span>
         <span class="brand-name">MailGuard Lab</span>
-        <span class="brand-sep" aria-hidden="true">/</span>
-        <span class="brand-sub">Đề tài 24 · Bảo mật Email</span>
+        <span class="brand-sep" aria-hidden="true">·</span>
+        <span class="brand-sub">Đề tài 24</span>
       </div>
 
       <nav class="tab-nav" aria-label="Điều hướng chức năng">
         <button type="button" class="tab-btn active" data-tab="inbox">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/>
             <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
           </svg>
           <span>Hộp thư</span>
         </button>
         <button type="button" class="tab-btn" data-tab="analyzer">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <polyline points="16 18 22 12 16 6"/>
             <polyline points="8 6 2 12 8 18"/>
           </svg>
           <span>Phân tích Header</span>
         </button>
         <button type="button" class="tab-btn" data-tab="guide">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
             <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
           </svg>
@@ -46,10 +46,6 @@
       </nav>
 
       <div class="topbar-meta">
-        <span class="offline-indicator" title="Chạy 100% ngoại tuyến, không gửi dữ liệu ra ngoài">
-          <span class="status-dot" aria-hidden="true"></span>
-          <span>Offline Safe</span>
-        </span>
         <div class="topbar-stats" aria-label="Tiến độ làm bài">
           <div class="stats-row">
             <span class="metric-item"><span class="metric-label">Tiến độ</span> <strong id="stat-progress">0 / 6</strong></span>
@@ -61,55 +57,65 @@
           </div>
         </div>
         <div class="topbar-actions">
-          <button type="button" id="btn-summary" class="btn btn-chrome-secondary btn-sm">Tổng kết</button>
-          <button type="button" id="btn-reset" class="btn btn-chrome-ghost btn-sm">Làm lại</button>
+          <button type="button" id="btn-summary" class="btn btn-secondary btn-sm">Tổng kết</button>
+          <button type="button" id="btn-reset" class="btn btn-ghost btn-sm">Làm lại</button>
         </div>
       </div>
     </div>
   </header>
 
   <main class="workspace">
-    <!-- TAB 1: INBOX PHISHING SIMULATOR -->
+    <!-- TAB 1: 3-COLUMN INBOX & SECURITY TRIAGE WORKBENCH -->
     <section id="panel-inbox" class="tab-panel active">
-      <div class="inbox-shell">
+      <div class="inbox-workbench">
+        <!-- Column 1: Inbox Mail Rail -->
         <aside class="inbox-rail" aria-label="Danh sách thư mô phỏng">
           <div class="rail-header">
-            <h1 class="rail-title" id="inbox-list-title">Hộp thư đến</h1>
-            <span class="rail-hint">Mô phỏng an toàn</span>
+            <h1 class="rail-title" id="inbox-list-title">Hộp thư đến (6 kịch bản)</h1>
+            <span class="rail-pill" id="rail-unread-count">6 chờ xét</span>
           </div>
           <div id="scenario-list" class="scenario-list"></div>
+          <div class="rail-footer">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span>Mô phỏng 100% cục bộ · Offline</span>
+          </div>
         </aside>
 
+        <!-- Column 2: Center Email Reading Canvas -->
         <article class="reading-pane" id="email-viewer">
-          <header class="mail-header">
-            <div class="mail-subject-row">
-              <h2 id="view-subject" class="mail-subject">Chọn một email để kiểm tra</h2>
-              <div class="mail-actions">
-                <button type="button" id="btn-toggle-header" class="btn btn-secondary btn-sm">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                    <polyline points="14 2 14 8 20 8"/>
-                    <line x1="16" y1="13" x2="8" y2="13"/>
-                    <line x1="16" y1="17" x2="8" y2="17"/>
-                  </svg>
-                  <span id="toggle-header-label">Soi Raw Header &amp; Xác thực</span>
-                </button>
-                <button type="button" id="btn-send-to-analyzer" class="btn btn-accent-outline btn-sm">
-                  <span>Phân tích sâu ở Tab 2</span>
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <line x1="5" y1="12" x2="19" y2="12"/>
-                    <polyline points="12 5 19 12 12 19"/>
-                  </svg>
-                </button>
-              </div>
+          <div class="mail-toolbar">
+            <div class="mail-nav-group">
+              <button type="button" id="btn-prev-mail" class="btn btn-ghost btn-xs" aria-label="Email trước">&larr; Trước</button>
+              <span id="mail-position-label" class="mail-pos">Thư 1 / 6</span>
+              <button type="button" id="btn-next-mail" class="btn btn-ghost btn-xs" aria-label="Email tiếp theo">Sau &rarr;</button>
             </div>
+            <div class="mail-actions">
+              <button type="button" id="btn-toggle-header" class="btn btn-secondary btn-xs">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                  <line x1="16" y1="13" x2="8" y2="13"/>
+                  <line x1="16" y1="17" x2="8" y2="17"/>
+                </svg>
+                <span id="toggle-header-label">Soi Raw Header</span>
+              </button>
+              <button type="button" id="btn-send-to-analyzer" class="btn btn-accent-soft btn-xs">
+                <span>Phân tích ở Tab 2</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                  <polyline points="12 5 19 12 12 19"/>
+                </svg>
+              </button>
+            </div>
+          </div>
 
+          <header class="mail-header">
+            <h2 id="view-subject" class="mail-subject">Chọn một email để kiểm tra</h2>
             <div class="sender-bar">
               <div class="sender-identity">
                 <span id="view-avatar" class="avatar avatar-lg" aria-hidden="true">IT</span>
                 <div class="sender-details">
                   <div class="sender-from-line">
-                    <span class="meta-k">Từ:</span>
                     <span id="view-from" class="sender-from-val"></span>
                   </div>
                   <div class="sender-sub-line">
@@ -137,102 +143,107 @@
 
           <div class="mail-body-section">
             <div id="view-body" class="email-body"></div>
-            <p class="hover-footnote">Rê chuột hoặc nhấn Tab vào liên kết để kiểm tra URL đích ở góc dưới trái (mọi điều hướng ngoài đều được chặn an toàn).</p>
+            <p class="hover-footnote">Rê chuột hoặc nhấn Tab vào liên kết để kiểm tra URL đích ở góc dưới trái (chặn điều hướng thật).</p>
           </div>
 
           <div id="view-attachments-wrap" class="attachments-strip hidden">
             <h3 class="strip-label">Tệp đính kèm (Metadata mô phỏng an toàn)</h3>
             <div id="view-attachments" class="attachment-list"></div>
           </div>
+        </article>
 
-          <section id="decision-box" class="assessment-dock" aria-label="Đánh giá email">
-            <div class="dock-header">
-              <h3>Đánh giá của bạn</h3>
-              <span class="dock-sub">Phân loại email và chọn các dấu hiệu bất thường quan sát được</span>
+        <!-- Column 3: Right Security Evaluation Inspector -->
+        <aside id="decision-box" class="inspector-pane" aria-label="Phiếu đánh giá an toàn">
+          <div class="inspector-head">
+            <div>
+              <h3>Phiếu Đánh giá An toàn</h3>
+              <span class="inspector-sub">Đối chiếu Header, URL &amp; ngữ điệu</span>
             </div>
+            <span id="inspector-scenario-tag" class="badge badge-neutral">Mẫu 1</span>
+          </div>
 
+          <div class="inspector-section">
+            <span class="inspector-label">1. Kết luận phân loại</span>
             <div class="verdict-options">
               <label class="verdict-card verdict-card-safe">
                 <input type="radio" name="user-verdict" value="safe">
                 <span class="verdict-icon verdict-icon-safe" aria-hidden="true">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                     <path d="m9 12 2 2 4-4"/>
                   </svg>
                 </span>
                 <span class="verdict-text">
                   <strong>Email An toàn</strong>
-                  <small>Hợp lệ, xác thực khớp</small>
+                  <small>Hợp lệ</small>
                 </span>
               </label>
 
               <label class="verdict-card verdict-card-danger">
                 <input type="radio" name="user-verdict" value="phishing">
                 <span class="verdict-icon verdict-icon-danger" aria-hidden="true">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
                     <line x1="12" y1="9" x2="12" y2="13"/>
                     <line x1="12" y1="17" x2="12.01" y2="17"/>
                   </svg>
                 </span>
                 <span class="verdict-text">
-                  <strong>Email Lừa đảo / Giả mạo</strong>
-                  <small>Phishing, Spoofing hoặc Mã độc</small>
+                  <strong>Lừa đảo / Giả mạo</strong>
+                  <small>Phishing / Spoofing</small>
                 </span>
               </label>
             </div>
+          </div>
 
-            <div class="flags-checklist">
-              <p class="flags-label">Dấu hiệu nhận diện (Red Flags) — tùy chọn:</p>
-              <div class="flags-grid" id="user-flags-grid">
-                <label class="flag-option"><input type="checkbox" value="auth_fail"><span>SPF / DKIM / DMARC thất bại hoặc thiếu</span></label>
-                <label class="flag-option"><input type="checkbox" value="mismatch"><span>Lệch Return-Path hoặc Reply-To</span></label>
-                <label class="flag-option"><input type="checkbox" value="domain"><span>Tên miền giả mạo / Punycode / Subdomain</span></label>
-                <label class="flag-option"><input type="checkbox" value="link"><span>Liên kết hiển thị khác URL đích thật</span></label>
-                <label class="flag-option"><input type="checkbox" value="attachment"><span>Tệp đính kèm nguy hiểm / Đuôi kép / Macro</span></label>
-                <label class="flag-option"><input type="checkbox" value="social"><span>Áp lực khẩn cấp / Giả danh lãnh đạo (BEC)</span></label>
-              </div>
-            </div>
-
-            <p id="decision-error" class="inline-error hidden" role="alert"></p>
-
-            <div class="dock-actions">
-              <button type="button" id="btn-submit-verdict" class="btn btn-primary">Gửi phán đoán &amp; Xem giải thích</button>
-            </div>
-
-            <div id="feedback-panel" class="feedback-panel hidden"></div>
-          </section>
-        </article>
-      </div>
-    </section>
-
-    <!-- TAB 2: EMAIL HEADER & SPOOFING ANALYZER -->
-    <section id="panel-analyzer" class="tab-panel">
-      <div class="workbench-stack">
-        <div class="surface-panel">
-          <div class="panel-head">
-            <div>
-              <h2 class="panel-title">Phân tích Raw Email Header &amp; Phát hiện Spoofing</h2>
-              <p class="helper-text">Nạp nhanh kịch bản mẫu, chọn tệp <code>.eml</code>/<code>.txt</code> từ máy tính hoặc dán Raw Header để phân tích cục bộ.</p>
+          <div class="inspector-section">
+            <span class="inspector-label">2. Dấu hiệu nhận diện (Red Flags) — tùy chọn</span>
+            <div class="flags-grid" id="user-flags-grid">
+              <label class="flag-option"><input type="checkbox" value="auth_fail"><span>SPF / DKIM / DMARC thất bại hoặc thiếu</span></label>
+              <label class="flag-option"><input type="checkbox" value="mismatch"><span>Lệch Return-Path hoặc Reply-To</span></label>
+              <label class="flag-option"><input type="checkbox" value="domain"><span>Tên miền giả mạo / Punycode / Subdomain</span></label>
+              <label class="flag-option"><input type="checkbox" value="link"><span>Liên kết hiển thị khác URL đích thật</span></label>
+              <label class="flag-option"><input type="checkbox" value="attachment"><span>Tệp đính kèm nguy hiểm / Đuôi kép / Macro</span></label>
+              <label class="flag-option"><input type="checkbox" value="social"><span>Áp lực khẩn cấp / Giả danh lãnh đạo (BEC)</span></label>
             </div>
           </div>
 
-          <div class="quick-load-row">
-            <span class="quick-label">Nạp nhanh:</span>
-            <div id="quick-sample-buttons" class="quick-buttons"></div>
-            <label class="btn btn-secondary btn-sm file-upload-btn">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <p id="decision-error" class="inline-error hidden" role="alert"></p>
+
+          <button type="button" id="btn-submit-verdict" class="btn btn-primary btn-block">Gửi phán đoán &amp; Xem giải thích</button>
+
+          <div id="feedback-panel" class="feedback-panel hidden"></div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- TAB 2: 2-COLUMN SIDE-BY-SIDE FORENSIC ANALYZER -->
+    <section id="panel-analyzer" class="tab-panel">
+      <div class="analyzer-workbench">
+        <div class="surface-panel analyzer-input-panel">
+          <div class="panel-head-row">
+            <div>
+              <h2 class="panel-title">Dữ liệu Email đầu vào</h2>
+              <p class="helper-text">Nạp mẫu, chọn tệp <code>.eml</code>/<code>.txt</code> hoặc dán Raw Header.</p>
+            </div>
+            <label class="btn btn-secondary btn-xs file-upload-btn">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                 <polyline points="17 8 12 3 7 8"/>
                 <line x1="12" y1="3" x2="12" y2="15"/>
               </svg>
-              <span>Tải file .eml</span>
+              <span>Tải .eml</span>
               <input type="file" id="eml-file-input" accept=".eml,.txt" hidden>
             </label>
           </div>
 
+          <div class="quick-load-box">
+            <span class="quick-label">Nạp nhanh kịch bản:</span>
+            <div id="quick-sample-buttons" class="quick-buttons"></div>
+          </div>
+
           <label for="raw-header-input" class="sr-only">Nội dung Raw Email Header</label>
-          <textarea id="raw-header-input" rows="10" placeholder="Dán Raw Header hoặc toàn bộ nội dung file .eml vào đây..."></textarea>
+          <textarea id="raw-header-input" rows="15" placeholder="Dán Raw Header hoặc toàn bộ nội dung file .eml vào đây..."></textarea>
 
           <div class="actions">
             <button type="button" id="btn-analyze" class="btn btn-primary">Phân tích ngay</button>
@@ -240,89 +251,76 @@
           </div>
         </div>
 
-        <div id="analyzer-output" class="surface-panel analyzer-output hidden"></div>
+        <div class="analyzer-report-col">
+          <div id="analyzer-empty" class="surface-panel analyzer-empty">
+            <div class="empty-icon" aria-hidden="true">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <polyline points="9 12 11 14 15 10"/>
+              </svg>
+            </div>
+            <h3>Chưa có dữ liệu phân tích</h3>
+            <p>Chọn một kịch bản mẫu ở cột trái, tải lên tệp <code>.eml</code> cục bộ hoặc dán Raw Email Header rồi bấm <strong>Phân tích ngay</strong> để kiểm tra SPF, DKIM, DMARC Alignment và mức độ rủi ro.</p>
+          </div>
+
+          <div id="analyzer-output" class="surface-panel analyzer-output hidden"></div>
+        </div>
       </div>
     </section>
 
-    <!-- TAB 3: RED FLAGS PLAYBOOK -->
+    <!-- TAB 3: 2-COLUMN EDITORIAL BLUE-TEAM PLAYBOOK -->
     <section id="panel-guide" class="tab-panel">
-      <div class="playbook-wrap">
-        <div class="playbook-banner">
-          <div class="playbook-banner-badge">BLUE TEAM PLAYBOOK · 5 BƯỚC</div>
-          <h2>Cẩm nang Kiểm tra Email Đáng ngờ trước khi Tương tác</h2>
-          <p>Kết hợp đối chiếu kỹ thuật Header (SPF/DKIM/DMARC) và nhận diện thủ thuật tâm lý để phòng ngừa Phishing, BEC và Malware đính kèm.</p>
-        </div>
+      <div class="playbook-layout">
+        <aside class="surface-panel playbook-sidebar">
+          <div class="playbook-tag">BLUE TEAM PLAYBOOK</div>
+          <h2 class="playbook-title">Cẩm nang 5 Bước Kiểm tra Email</h2>
+          <p class="playbook-intro">Quy trình chuẩn giúp người dùng đối chiếu đồng thời tín hiệu kỹ thuật trong Header và thủ thuật tâm lý trước khi bấm liên kết hay mở tệp đính kèm.</p>
 
-        <ol class="playbook-grid">
+          <div class="quick-rule-box">
+            <h3>Quy tắc 30 giây</h3>
+            <ul>
+              <li><strong>Ai gửi thật?</strong> So sánh <code>From</code>, <code>Return-Path</code> và <code>Reply-To</code>.</li>
+              <li><strong>Có được xác thực?</strong> Kiểm tra <code>DKIM</code> &amp; <code>DMARC</code> Alignment.</li>
+              <li><strong>Hành động an toàn?</strong> Rê chuột kiểm tra URL; không bật Macro.</li>
+            </ul>
+          </div>
+        </aside>
+
+        <ol class="playbook-list">
           <li class="guide-card">
-            <div class="guide-card-top">
-              <span class="guide-num" aria-hidden="true">01</span>
-              <span class="guide-icon" aria-hidden="true">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                  <circle cx="9" cy="7" r="4"/>
-                  <polyline points="16 11 18 13 22 9"/>
-                </svg>
-              </span>
+            <div class="guide-card-num" aria-hidden="true">01</div>
+            <div class="guide-card-body">
+              <h3>Đối chiếu địa chỉ gửi thực (<code>From</code> vs <code>Return-Path</code> vs <code>Reply-To</code>)</h3>
+              <p>Không chỉ nhìn tên hiển thị (<em>Display Name</em>). Kiểm tra tên miền thật sau ký tự <code>@</code> và cảnh giác khi <code>Reply-To</code> điều hướng sang hộp thư cá nhân miễn phí trong các kịch bản giả danh lãnh đạo (BEC).</p>
             </div>
-            <h3>Đối chiếu địa chỉ gửi thực</h3>
-            <p>Không chỉ nhìn tên hiển thị (<em>Display Name</em>). Kiểm tra tên miền sau <code>@</code> ở cả <code>From</code>, <code>Return-Path</code> và cảnh giác nếu <code>Reply-To</code> chuyển sang mail cá nhân trong tấn công BEC.</p>
           </li>
-
           <li class="guide-card">
-            <div class="guide-card-top">
-              <span class="guide-num" aria-hidden="true">02</span>
-              <span class="guide-icon" aria-hidden="true">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="10"/>
-                  <line x1="2" y1="12" x2="22" y2="12"/>
-                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                </svg>
-              </span>
+            <div class="guide-card-num" aria-hidden="true">02</div>
+            <div class="guide-card-body">
+              <h3>Soi cấu trúc tên miền (Lookalike, Punycode &amp; Subdomain Trick)</h3>
+              <p>Cảnh giác lỗi gõ nhầm (<em>Typosquatting</em>), ghép từ khóa tin cậy (<em>Combosquatting</em>), tiền tố <code>xn--</code> của tấn công đồng hình IDN và đường dẫn subdomain dài — luôn đọc phần tên miền gốc ngay trước dấu <code>/</code> đầu tiên.</p>
             </div>
-            <h3>Soi cấu trúc tên miền &amp; Punycode</h3>
-            <p>Cảnh giác lỗi gõ nhầm (<em>Typosquatting</em>), ghép từ khóa (<em>Combosquatting</em>), tiền tố <code>xn--</code> của tấn công đồng hình IDN và thủ thuật subdomain dài (đọc tên miền gốc ngay trước dấu <code>/</code> đầu tiên).</p>
           </li>
-
           <li class="guide-card">
-            <div class="guide-card-top">
-              <span class="guide-num" aria-hidden="true">03</span>
-              <span class="guide-icon" aria-hidden="true">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                  <path d="m9 12 2 2 4-4"/>
-                </svg>
-              </span>
+            <div class="guide-card-num" aria-hidden="true">03</div>
+            <div class="guide-card-body">
+              <h3>Kiểm tra kết quả xác thực &amp; căn chỉnh định danh (<code>SPF / DKIM / DMARC</code>)</h3>
+              <p>Nếu DMARC hoặc DKIM thất bại (<code>fail</code>), tuyệt đối không tin tưởng thư. Lưu ý: <code>SPF=PASS</code> đứng riêng vẫn có thể xuất hiện nếu kẻ tấn công tự mua tên miền giả và cấu hình SPF riêng cho miền đó.</p>
             </div>
-            <h3>Kiểm tra xác thực SPF / DKIM / DMARC</h3>
-            <p>Nếu DMARC hoặc DKIM thất bại (<code>fail</code>), tuyệt đối không tin tưởng thư. Lưu ý: <code>SPF=PASS</code> đứng riêng vẫn có thể xảy ra nếu kẻ tấn công tự cấu hình SPF trên tên miền giả mới mua.</p>
           </li>
-
           <li class="guide-card">
-            <div class="guide-card-top">
-              <span class="guide-num" aria-hidden="true">04</span>
-              <span class="guide-icon" aria-hidden="true">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
-                </svg>
-              </span>
+            <div class="guide-card-num" aria-hidden="true">04</div>
+            <div class="guide-card-body">
+              <h3>Kiểm tra URL đích trước khi bấm (Hover Before Click)</h3>
+              <p>Rê chuột lên đường dẫn để đối chiếu chuỗi chữ hiển thị với URL đích thực tế trên thanh trạng thái. Với giao dịch ngân hàng hoặc đổi mật khẩu, hãy tự gõ địa chỉ trang chủ thay vì bấm link trong thư.</p>
             </div>
-            <h3>Kiểm tra URL đích trước khi bấm</h3>
-            <p>Rê chuột lên đường dẫn để đối chiếu chuỗi chữ hiển thị với URL đích thực tế ở thanh trạng thái. Với giao dịch ngân hàng hoặc đổi mật khẩu, hãy tự gõ địa chỉ trang chủ thay vì bấm link trong thư.</p>
           </li>
-
-          <li class="guide-card guide-card-wide">
-            <div class="guide-card-top">
-              <span class="guide-num" aria-hidden="true">05</span>
-              <span class="guide-icon" aria-hidden="true">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
-                </svg>
-              </span>
+          <li class="guide-card">
+            <div class="guide-card-num" aria-hidden="true">05</div>
+            <div class="guide-card-body">
+              <h3>Cảnh giác tệp đính kèm nguy hiểm &amp; đòn tâm lý khẩn cấp</h3>
+              <p>Không mở tệp phần mở rộng kép (<code>.pdf.exe</code>), tệp thực thi/script (<code>.exe</code>, <code>.scr</code>, <code>.vbs</code>, <code>.html</code>), tài liệu Office dụ bấm <em>Enable Macros</em> (<code>.docm</code>, <code>.xlsm</code>) hay tệp nén đặt mật khẩu né bộ lọc Gateway.</p>
             </div>
-            <h3>Cảnh giác tệp đính kèm nguy hiểm &amp; đòn tâm lý khẩn cấp</h3>
-            <p>Không mở tệp phần mở rộng kép (<code>.pdf.exe</code>), tệp thực thi/script (<code>.exe</code>, <code>.scr</code>, <code>.vbs</code>, <code>.html</code>), tài liệu Office dụ bấm <em>Enable Macros</em> (<code>.docm</code>, <code>.xlsm</code>) hay tệp nén đặt mật khẩu né bộ lọc Gateway; luôn xác minh chéo qua kênh điện thoại nội bộ nếu thư thúc ép chuyển khoản gấp.</p>
           </li>
         </ol>
       </div>
@@ -346,7 +344,7 @@
     <div class="modal-card">
       <div class="modal-header">
         <h2 id="modal-heading">Báo cáo Kết quả Mô phỏng Nhận diện Email</h2>
-        <button type="button" id="btn-close-modal" class="btn btn-chrome-ghost btn-sm">Đóng</button>
+        <button type="button" id="btn-close-modal" class="btn btn-ghost btn-sm">Đóng</button>
       </div>
       <div class="modal-content">
         <div id="summary-modal-body"></div>
