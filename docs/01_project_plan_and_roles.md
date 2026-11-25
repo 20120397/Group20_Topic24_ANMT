@@ -6,7 +6,7 @@
 | :-: | :--- | :--- | :--- | :--- |
 | 1 | `[Điền tên TV1]` | `[MSSV]` | Trưởng nhóm / Kiến trúc giải pháp | `[Email/Zalo]` |
 | 2 | `[Điền tên TV2]` | `[MSSV]` | Threat & Malware Analyst | `[Email/Zalo]` |
-| 3 | `[Điền tên TV3]` | `[MSSV]` | Auth & Simulation Engineer | `[Email/Zalo]` |
+| 3 | Nguyễn Lê Hữu Điền | 23120233 | Auth & Simulation Engineer | 23120233@student.hcmus.edu.vn / GitHub: denny188 |
 
 ## 2. Lộ trình 4 Mốc (Milestones)
 

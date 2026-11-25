@@ -16,7 +16,7 @@
 | :-: | :--- | :--- | :--- | :--- | :-: |
 | 1 | `[Họ tên TV1]` | `[MSSV]` | **Trưởng nhóm (Project Leader)** | Chương 1, Chương 4, Chương 6, Sơ đồ tổng thể, Ghép báo cáo & Slide | `[...%]` |
 | 2 | `[Họ tên TV2]` | `[MSSV]` | **Threat & Malware Analyst** | Chương 2, Bộ 6 mẫu `.eml` an toàn & Đáp án Red Flags | `[...%]` |
-| 3 | `[Họ tên TV3]` | `[MSSV]` | **Auth & Simulation Engineer** | Chương 3, DNS Audit (`check_email_auth.ps1`), Chương 5 & Web App mô phỏng | `[...%]` |
+| 3 | Nguyễn Lê Hữu Điền | 23120233 | **Auth & Simulation Engineer** | Chương 3, DNS Audit (`check_email_auth.ps1`), Chương 5 & Web App mô phỏng | `[...%]` |
 
 ---
 

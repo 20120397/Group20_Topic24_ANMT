@@ -1,0 +1,10 @@
+# Tai lieu bai giang & so tay goc (chi luu cuc bo)
+tai_lieu_goc/
+
+# Tep tam khi chay kiem thu / he dieu hanh / IDE
+labs/dns_audit/live_audit_output.md
+node_modules/
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
