@@ -10,8 +10,8 @@
    - Chạy lệnh `.\check_email_auth.ps1 -Domains "gmail.com","vietcombank.com.vn"` (nếu phòng học có mạng) hoặc `nslookup -type=txt _dmarc.gmail.com` để chỉ trực tiếp bản ghi `v=DMARC1; p=reject...`.
    - *(Trường hợp phòng học không có mạng)*: Chạy `.\check_email_auth.ps1 -SelfTest` và chiếu ảnh kết quả đã chụp sẵn trên Slide 15.
 2. **Bước 2 - Thực hành trên Hộp thư Mô phỏng (2 phút - Hữu Điền thao tác, Gia Huy giải thích):**
-   - Tại **Tab 1 (`Hộp thư Mô phỏng`)**, mở **Mẫu 3 (BEC giả danh Giám đốc)**, hỏi nhanh cả lớp thư này an toàn hay lừa đảo, sau đó bấm **"Soi Raw Header & Xác thực"** chỉ ra `SPF=SOFTFAIL`, `DMARC=FAIL` và trường `Reply-To` bị tráo sang `freemail.example`.
-   - Chuyển sang **Mẫu 4 (Tên miền Punycode)**, chỉ ra chi tiết đáng chú ý: dù `SPF=PASS` nhưng địa chỉ gửi là `xn--micrsoft-7ya.example` và khi rê chuột vào link thì thanh xem trước dưới góc trái hiện tên miền thật là `account-reset-portal.example`.
+   - Tại **Tab 1 (`Hộp thư Mô phỏng`)**, mở **Mẫu 3 (BEC giả danh Giám đốc)**, hỏi nhanh cả lớp thư này an toàn hay lừa đảo, sau đó chỉ rõ kỹ thuật *Display Name Spoofing* (`ceo.corpvn@external-mail.example` né `p=REJECT` của công ty) rồi bấm **"Soi Raw Header"** chỉ ra `SPF=SOFTFAIL`, `DMARC=FAIL` và trường `Reply-To` bị tráo sang `freemail.example`.
+   - Chuyển sang **Mẫu 4 (Tên miền Punycode)**, chỉ ra chi tiết đáng chú ý: dù `SPF=PASS` nhưng địa chỉ gửi là `xn--micrsoft-qbh.example` (giải mã Unicode thành `micrоsoft.example` với ký tự `о` Cyrillic `U+043E`) và khi rê chuột vào link thì thanh xem trước dưới góc trái hiện tên miền thật là `account-reset-portal.example`.
    - Mở nhanh **Mẫu 6 (Phòng Nhân sự)** để đối chiếu một email nội bộ hợp lệ có đính kèm file `.pdf` sạch.
 3. **Bước 3 - Phân tích tự động file `.eml` (1.5 phút - Hữu Điền):**
    - Chuyển sang **Tab 2 (`Phân tích Email Header`)**, chọn tải file `sample_05_malicious_attachment.eml` từ máy (hoặc bấm nút nạp nhanh Mẫu 5).
