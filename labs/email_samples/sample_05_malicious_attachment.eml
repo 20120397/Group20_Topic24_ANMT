@@ -1,11 +1,19 @@
 Return-Path: <bounce@unknown-sender-44.example>
+Delivered-To: ketoan@corp-vn.example
 Received: from unknown-sender-44.example ([203.0.113.211])
-	by mx.corp-vn.example with SMTP
+	by mx.corp-vn.example with SMTP id 20261125-005E
 	for <ketoan@corp-vn.example>; Wed, 25 Nov 2026 09:35:00 +0700
+Received-SPF: fail (mx.corp-vn.example: domain of bounce@unknown-sender-44.example does not designate 203.0.113.211 as permitted sender)
+	client-ip=203.0.113.211; envelope-from=bounce@unknown-sender-44.example; helo=unknown-sender-44.example;
 Authentication-Results: mx.corp-vn.example;
-	spf=fail smtp.mailfrom=unknown-sender-44.example;
-	dkim=fail reason="signature verification failed";
-	dmarc=fail action=reject header.from=partner-logistics.example
+	spf=fail (mx.corp-vn.example: domain of bounce@unknown-sender-44.example does not designate 203.0.113.211 as permitted sender) smtp.mailfrom=bounce@unknown-sender-44.example;
+	dkim=fail reason="signature verification failed" header.d=partner-logistics.example header.s=mail2025;
+	dmarc=fail (p=QUARANTINE sp=QUARANTINE dis=QUARANTINE) header.from=partner-logistics.example
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=partner-logistics.example;
+	s=mail2025; t=1795574100;
+	h=from:to:subject:date:message-id;
+	bh=INVALID_BODY_HASH_SIMULATED_FOR_TRAINING_SAMPLE_05=;
+	b=SIMUL05E_FORGED_OR_TAMPERED_DKIM_SIGNATURE_SAMPLE_05
 From: "Bo phan Thanh toan - Doi tac Van tai" <billing@partner-logistics.example>
 To: <ketoan@corp-vn.example>
 Subject: Gui lai Bien lai thanh toan va Hop dong bo sung T11/2026
@@ -15,25 +23,32 @@ MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="----=_Part_Sample05_Boundary"
 
 ------=_Part_Sample05_Boundary
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-Kinh gui Phong Ke toan,
+Kính gửi Phòng Kế toán,
 
-Chung toi xin gui kem bien lai thanh toan dot 2 va file hop dong bo sung thang 11/2026.
-Vui long mo tep dinh kem BienLai_ThanhToan_2026.pdf.exe hoac HoSo_ChuyenKhoan_2026.docm va chon "Enable Content / Enable Macros" khi duoc hoi de xem day du bang ke chi tiet.
+Chúng tôi xin gửi kèm biên lai thanh toán đợt 2 và file hợp đồng bổ sung tháng 11/2026.
+Vui lòng mở tệp biên lai BienLai_ThanhToan_2026.pdf hoặc HoSo_ChuyenKhoan_2026.docm đính kèm và chọn "Enable Content / Enable Macros" khi được hỏi để xem đầy đủ bảng kê chi tiết.
 
-Tran trong,
-Bo phan Thanh toan
+Trân trọng,
+Bộ phận Thanh toán
 ------=_Part_Sample05_Boundary
-Content-Type: text/plain; name="BienLai_ThanhToan_2026.pdf.exe"
+Content-Type: text/plain; charset="UTF-8"; name="BienLai_ThanhToan_2026.pdf.exe"
+Content-Transfer-Encoding: 8bit
 Content-Disposition: attachment; filename="BienLai_ThanhToan_2026.pdf.exe"
 
-[SIMULATED SAFE PLACEHOLDER ONLY - NOT AN EXECUTABLE]
-Day la tep van ban mo phong cho de tai bao mat email. Khong chua ma thuc thi.
+[Tệp văn bản mô phỏng phục vụ đồ án - Không chứa mã thực thi]
+Đây là tệp văn bản mô phỏng an toàn cho đề tài bảo mật email (Đề tài 24).
+Tuyệt đối không chứa mã thực thi (.exe) hay payload độc hại thật.
+Mục đích: minh họa kỹ thuật giả mạo phần mở rộng kép (Double Extension).
 ------=_Part_Sample05_Boundary
-Content-Type: text/plain; name="HoSo_ChuyenKhoan_2026.docm"
+Content-Type: text/plain; charset="UTF-8"; name="HoSo_ChuyenKhoan_2026.docm"
+Content-Transfer-Encoding: 8bit
 Content-Disposition: attachment; filename="HoSo_ChuyenKhoan_2026.docm"
 
-[SIMULATED SAFE PLACEHOLDER ONLY - NO MACRO PAYLOAD]
-Day la tep van ban mo phong cho de tai bao mat email. Khong chua VBA macro.
+[Tệp văn bản mô phỏng phục vụ đồ án - Không chứa VBA macro]
+Đây là tệp văn bản mô phỏng an toàn cho đề tài bảo mật email (Đề tài 24).
+Tuyệt đối không chứa mã VBA Macro hay mã độc thật.
+Mục đích: minh họa kỹ thuật phát tán Macro Virus qua tài liệu Office (.docm).
 ------=_Part_Sample05_Boundary--

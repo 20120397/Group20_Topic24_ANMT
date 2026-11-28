@@ -1,29 +1,40 @@
 Return-Path: <it-support@corp-vn.example>
+Delivered-To: staff@corp-vn.example
 Received: from mail.corp-vn.example (mail.corp-vn.example [198.51.100.10])
-	by mx.corp-vn.example with ESMTPS (TLSv1.3)
-	for <staff@corp-vn.example>; Wed, 25 Nov 2026 08:15:00 +0700
+	by mx.corp-vn.example with ESMTPS id 20261125-001A
+	(version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384)
+	for <staff@corp-vn.example>; Wed, 25 Nov 2026 08:15:02 +0700
+Received: from mail-sub.corp-vn.example (mail-sub.corp-vn.example [198.51.100.12])
+	by mail.corp-vn.example with ESMTPSA id 20261125-001S
+	(version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384);
+	Wed, 25 Nov 2026 08:15:00 +0700
+Received-SPF: pass (mx.corp-vn.example: domain of it-support@corp-vn.example designates 198.51.100.10 as permitted sender)
+	client-ip=198.51.100.10; envelope-from=it-support@corp-vn.example; helo=mail.corp-vn.example;
 Authentication-Results: mx.corp-vn.example;
-	spf=pass (sender IP is 198.51.100.10) smtp.mailfrom=corp-vn.example;
-	dkim=pass header.d=corp-vn.example header.s=mail2026;
-	dmarc=pass action=none header.from=corp-vn.example
+	spf=pass (mx.corp-vn.example: domain of it-support@corp-vn.example designates 198.51.100.10 as permitted sender) smtp.mailfrom=it-support@corp-vn.example;
+	dkim=pass header.d=corp-vn.example header.s=mail2026 header.b=MIIBIjAN;
+	dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=corp-vn.example
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=corp-vn.example;
-	s=mail2026; h=from:to:subject:date:message-id;
+	s=mail2026; t=1795569300;
+	h=from:to:subject:date:message-id:mime-version:content-type;
 	bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
-	b=SIMULATED_VALID_DKIM_SIGNATURE_FOR_TRAINING_SAMPLE_01
+	b=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA7x9kLm2Sample01==
 From: "Phong Ky Thuat IT - CorpVN" <it-support@corp-vn.example>
 To: "Toan the Nhan vien" <staff@corp-vn.example>
 Subject: [Thong bao] Bao tri he thong mang noi bo cuoi tuan (28/11)
 Date: Wed, 25 Nov 2026 08:15:00 +0700
 Message-ID: <20261125081500.001@corp-vn.example>
 MIME-Version: 1.0
-Content-Type: text/html; charset=UTF-8
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-<html>
+<!DOCTYPE html>
+<html lang="vi">
 <body>
-  <p>Kinh gui Anh/Chi,</p>
-  <p>Phong Ky thuat IT xin thong bao ke hoach bao tri dinh ky he thong may chu va VPN noi bo tu <strong>22:00 Thu Bay (28/11/2026)</strong> den <strong>02:00 Chu Nhat (29/11/2026)</strong>.</p>
-  <p>Trong thoi gian tren, truy cap he thong ngoai gio lam viec co the gian doan tam thoi. Moi nguoi khong can cung cap mat khau hay ma xac thuc cho bat ky ca nhan nao.</p>
-  <p>Chi tiet trang thai dich vu duoc cap nhat tai cong noi bo: <a href="https://status.corp-vn.example/maintenance">https://status.corp-vn.example/maintenance</a></p>
-  <p>Tran trong,<br>Phong Ky Thuat IT — CorpVN</p>
+  <p>Kính gửi Anh/Chị,</p>
+  <p>Phòng Kỹ thuật IT xin thông báo kế hoạch bảo trì định kỳ hệ thống máy chủ và VPN nội bộ từ <strong>22:00 Thứ Bảy (28/11/2026)</strong> đến <strong>02:00 Chủ Nhật (29/11/2026)</strong>.</p>
+  <p>Trong thời gian trên, truy cập hệ thống ngoài giờ làm việc có thể gián đoạn tạm thời. Nhân viên không cần cung cấp mật khẩu hay mã xác thực cho bất kỳ cá nhân nào.</p>
+  <p>Chi tiết trạng thái dịch vụ được cập nhật tại cổng nội bộ: <a href="https://status.corp-vn.example/maintenance">https://status.corp-vn.example/maintenance</a></p>
+  <p>Trân trọng,<br>Phòng Kỹ thuật IT — CorpVN</p>
 </body>
 </html>

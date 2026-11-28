@@ -1,25 +1,30 @@
 Return-Path: <bounce@promo-mailer-99.example>
+Delivered-To: khachhang@corp-vn.example
 Received: from host88.promo-mailer-99.example ([203.0.113.88])
-	by mx.corp-vn.example with SMTP
+	by mx.corp-vn.example with SMTP id 20261125-002B
 	for <khachhang@corp-vn.example>; Wed, 25 Nov 2026 08:42:10 +0700
+Received-SPF: fail (mx.corp-vn.example: domain of bounce@promo-mailer-99.example does not designate 203.0.113.88 as permitted sender)
+	client-ip=203.0.113.88; envelope-from=bounce@promo-mailer-99.example; helo=host88.promo-mailer-99.example;
 Authentication-Results: mx.corp-vn.example;
-	spf=fail (203.0.113.88 is not authorized to send for vcb-bank.example) smtp.mailfrom=promo-mailer-99.example;
-	dkim=none;
-	dmarc=fail action=quarantine header.from=vcb-bank.example
+	spf=fail (mx.corp-vn.example: domain of bounce@promo-mailer-99.example does not designate 203.0.113.88 as permitted sender) smtp.mailfrom=bounce@promo-mailer-99.example;
+	dkim=none (message not signed);
+	dmarc=fail (p=QUARANTINE sp=QUARANTINE dis=QUARANTINE; spf/dkim alignment failed) header.from=vcb-bank.example
 From: "VCB Digibank Security" <no-reply@vcb-bank.example>
 To: <khachhang@corp-vn.example>
 Subject: [KHAN CAP] Tai khoan cua ban se bi KHOA sau 02 gio!
 Date: Wed, 25 Nov 2026 08:42:10 +0700
 Message-ID: <20261125084210.002@promo-mailer-99.example>
 MIME-Version: 1.0
-Content-Type: text/html; charset=UTF-8
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-<html>
+<!DOCTYPE html>
+<html lang="vi">
 <body>
-  <p>Kinh gui Quy khach hang,</p>
-  <p>He thong phat hien hoat dong dang nhap bat thuong tu thiet bi la. Tai khoan VCB Digibank cua Quy khach se bi <strong>TAM KHOA VINH VIEN SAU 02 GIO</strong> neu khong xac minh ngay lap tuc.</p>
-  <p>Vui long truy cap lien ket duoi day de xac nhan thong tin the va ma OTP:</p>
+  <p>Kính gửi Quý khách hàng,</p>
+  <p>Hệ thống phát hiện hoạt động đăng nhập bất thường từ thiết bị lạ. Tài khoản VCB Digibank của Quý khách sẽ <strong>BỊ KHÓA VĨNH VIỄN SAU 02 GIỜ</strong> nếu không xác minh ngay lập tức.</p>
+  <p>Vui lòng truy cập liên kết dưới đây để xác nhận thông tin thẻ và mã OTP:</p>
   <p><a href="http://vcb-security-check.login-verify.example/auth">https://vcb-bank.example/verify</a></p>
-  <p>Bo phan Bao mat Ngan hang</p>
+  <p>Bộ phận Bảo mật Ngân hàng</p>
 </body>
 </html>

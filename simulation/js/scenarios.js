@@ -43,7 +43,7 @@ Authentication-Results: mx.corp-vn.example;
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=corp-vn.example;
 \ts=mail2026; h=from:to:subject:date:message-id;
 \tbh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
-\tb=SIMULATED_VALID_DKIM_SIGNATURE_FOR_TRAINING_SAMPLE_01
+\tb=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA7x9kLm2Sample01==
 From: "Phong Ky Thuat IT - CorpVN" <it-support@corp-vn.example>
 To: "Toan the Nhan vien" <staff@corp-vn.example>
 Subject: [Thong bao] Bao tri he thong mang noi bo cuoi tuan (28/11)
@@ -241,12 +241,12 @@ Vui long mo tep dinh kem va chon "Enable Content / Enable Macros".
 Content-Type: text/plain; name="BienLai_ThanhToan_2026.pdf.exe"
 Content-Disposition: attachment; filename="BienLai_ThanhToan_2026.pdf.exe"
 
-[SIMULATED SAFE PLACEHOLDER ONLY]
+[Tep van ban mo phong phuc vu do an]
 ------=_Part_Sample05_Boundary
 Content-Type: text/plain; name="HoSo_ChuyenKhoan_2026.docm"
 Content-Disposition: attachment; filename="HoSo_ChuyenKhoan_2026.docm"
 
-[SIMULATED SAFE PLACEHOLDER ONLY]
+[Tep van ban mo phong phuc vu do an]
 ------=_Part_Sample05_Boundary--`
   },
   {
@@ -290,7 +290,7 @@ Authentication-Results: mx.corp-vn.example;
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=corp-vn.example;
 \ts=mail2026; h=from:to:subject:date:message-id;
 \tbh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
-\tb=SIMULATED_VALID_DKIM_SIGNATURE_FOR_TRAINING_SAMPLE_06
+\tb=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA9p4tQw8Sample06==
 From: "Phong Nhan Su - CorpVN" <hr@corp-vn.example>
 To: "Toan the Nhan vien" <staff@corp-vn.example>
 Subject: Lich kham suc khoe dinh ky nam 2026 cho nhan vien
@@ -305,7 +305,7 @@ Content-Type: text/html; charset=UTF-8
 Content-Type: text/plain; name="Lich_Kham_Suc_Khoe_2026.pdf"
 Content-Disposition: attachment; filename="Lich_Kham_Suc_Khoe_2026.pdf"
 
-[SIMULATED SAFE PLACEHOLDER ONLY]
+[Tep van ban mo phong phuc vu do an]
 ------=_Part_Sample06_Boundary--`
   }
 ];

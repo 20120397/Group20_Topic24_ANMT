@@ -1,7 +1,7 @@
 # Chương 5: Xây dựng Tình huống Mô phỏng Nhận diện Email Lừa đảo
 
-> **Phụ trách:** Thành viên 3 (Auth & Simulation Engineer)  
-> **Phối hợp:** Thành viên 2 (thiết kế bộ mẫu `.eml` & đáp án Red Flags)
+> **Sinh viên thực hiện:** Nguyễn Lê Hữu Điền (`23120233`)  
+> **Phối hợp mẫu dữ liệu:** Nguyễn Gia Huy (`23120273` - bộ mẫu `.eml` & dấu hiệu nhận biết)
 
 ---
 
