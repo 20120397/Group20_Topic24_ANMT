@@ -1,38 +1,40 @@
 # Đề tài 24: Bảo mật Thư điện tử trước các Cuộc tấn công Giả mạo và Lừa đảo Trực tuyến
 
 > **Môn học:** An ninh Mạng & Hệ thống (Seminar)  
-> **Hình thức:** Đồ án cuối kì — Nhóm 3 thành viên  
+> **Hình thức:** Đồ án cuối kì - Nhóm 3 sinh viên
 
-
-## 1. Mục tiêu Đề tài
-1. Phân tích **Phishing**, **Email Spoofing**, **giả mạo tên miền** và **tệp đính kèm độc hại**.
+## 1. Nội dung Thực hiện
+1. Phân tích các hình thức tấn công: **Phishing**, **Email Spoofing**, **giả mạo tên miền** và **tệp đính kèm độc hại**.
 2. Tìm hiểu cơ chế **SPF, DKIM, DMARC** và vai trò của chúng trong xác thực email.
-3. Đề xuất giải pháp kết hợp **bộ lọc thư rác**, **xác thực người gửi** và **nâng cao nhận thức người dùng** (gắn với *Defense in Depth* & *ISO/IEC 27002, 27005*).
-4. Xây dựng **tình huống mô phỏng** nhận diện email lừa đảo.
+3. Đề xuất giải pháp kết hợp **bộ lọc thư rác**, **xác thực người gửi** và **nâng cao nhận thức người dùng** (theo hướng phòng thủ nhiều lớp và tiêu chuẩn *ISO/IEC 27002, 27005*).
+4. Xây dựng **tình huống mô phỏng** nhận diện email lừa đảo và phân tích Email Header.
 
-## 2. Phân công Thành viên
+## 2. Danh sách Nhóm & Phân công
 
-| Thành viên | Vai trò | Phạm vi báo cáo | Sản phẩm kỹ thuật |
-| :--- | :--- | :--- | :--- |
-| **Thành viên 1** | Trưởng nhóm & Kiến trúc giải pháp | Chương 1, 4, 6 & Tổng hợp | `docs/`, Sơ đồ giải pháp, `presentation/` |
-| **Thành viên 2** | Threat & Malware Analyst | Chương 2 | Bộ mẫu `.eml` an toàn (`labs/email_samples/`) |
-| **Thành viên 3** | Auth & Simulation Engineer | Chương 3, 5 | `labs/dns_audit/`, Web App (`simulation/`) |
+| Thành viên | MSSV | Vai trò | Phần báo cáo | Sản phẩm phụ trách |
+| :--- | :---: | :--- | :--- | :--- |
+| **Bùi Quang Tùng** *(TV1)* | `20120397` | Nhóm trưởng - Tổng quan & Giải pháp | Chương 1, 4, 6 & Tổng hợp | `docs/`, Sơ đồ kiến trúc, `presentation/` |
+| **Nguyễn Gia Huy** *(TV2)* | `23120273` | Phân tích tấn công & Tạo mẫu email | Chương 2 | Bộ mẫu `.eml` (`labs/email_samples/`) |
+| **Nguyễn Lê Hữu Điền** *(TV3)* | `23120233` | Cơ chế xác thực & Xây dựng mô phỏng | Chương 3, 5 | `labs/dns_audit/`, Web App (`simulation/`) |
 
-## 3. Cây thư mục Dự án
+## 3. Cấu trúc Thư mục
 
 ```text
 DeTai24_EmailSecurity/
 ├── README.md
-├── docs/            # Kế hoạch 4 mốc, đề cương & quy chuẩn
-├── report/          # Khung 6 chương báo cáo + assets/
+├── docs/              # Kế hoạch nhóm, đề cương & quy ước trình bày
+├── report/            # Nội dung 6 chương báo cáo + thư mục ảnh assets/
 ├── labs/
-│   ├── dns_audit/   # Script kiểm tra MX/SPF/DMARC & bảng kết quả
-│   └── email_samples/ # Bộ mẫu .eml an toàn & tài liệu Red Flags
-├── simulation/      # Khung Web App mô phỏng offline (HTML/CSS/JS)
-└── presentation/    # Dàn ý slide & kịch bản demo + Q&A
+│   ├── dns_audit/     # Script kiểm tra MX/SPF/DMARC & bảng kết quả khảo sát
+│   └── email_samples/ # Bộ 6 mẫu .eml phục vụ phân tích & mô phỏng
+├── simulation/        # Ứng dụng Web mô phỏng chạy cục bộ (HTML/CSS/JS)
+└── presentation/      # Slide thuyết trình (.pptx), dàn ý & kịch bản hỏi đáp
 ```
 
-## 4. Bắt đầu nhanh cho Thành viên
-- **TV1:** Điền tên/MSSV vào `docs/01_project_plan_and_roles.md`, chốt đề cương ở `docs/02_outline_and_standards.md` và viết Chương 1, 4, 6.
-- **TV2:** Viết Chương 2 và tạo các file `.eml` mẫu trong `labs/email_samples/` theo kế hoạch tại `scenarios_guide.md`.
-- **TV3:** Hoàn thiện `labs/dns_audit/check_email_auth.ps1`, chạy khảo sát DNS, xây dựng Web App tại `simulation/` và viết Chương 3, 5.
+## 4. Hướng dẫn Chạy Nhanh
+- **Mở ứng dụng mô phỏng:** Mở trực tiếp file `simulation/index.html` trên trình duyệt Chrome hoặc Edge.
+- **Chạy script kiểm tra DNS:** Mở PowerShell tại `labs/dns_audit/` và chạy:
+  ```powershell
+  powershell -ExecutionPolicy Bypass -File .\check_email_auth.ps1
+  ```
+  *(Nếu kiểm tra cú pháp/logic khi không có mạng, thêm tham số `-SelfTest`)*

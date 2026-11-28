@@ -1,49 +1,47 @@
-# Kịch bản Demo Trực tiếp & Ngân hàng Câu hỏi Q&A
+# Kịch bản Demo Trực tiếp & Câu hỏi Phản biện Dự phòng
 
 ---
 
-## 1. Kịch bản Chạy Demo Trực tiếp (4–5 phút)
+## 1. Kịch bản Chạy Demo Trực tiếp tại Slide 22 (4 - 5 phút)
 
-> **Chuẩn bị trước giờ báo cáo:** Mở sẵn tab trình duyệt trỏ tới `DeTai24_EmailSecurity\simulation\index.html` và mở sẵn một cửa sổ PowerShell tại `DeTai24_EmailSecurity\labs\dns_audit\`.
+> **Chuẩn bị trước buổi báo cáo:** Mở sẵn trình duyệt tại file `DeTai24_EmailSecurity\simulation\index.html` và mở sẵn cửa sổ PowerShell tại thư mục `DeTai24_EmailSecurity\labs\dns_audit\`.
 
-1. **Bước 1 — Thực nghiệm tra cứu DNS trên Terminal (1 phút — TV3):**
-   - Chạy `.\check_email_auth.ps1 -Domains "gmail.com","vietcombank.com.vn"` (nếu phòng máy có mạng) hoặc `nslookup -type=txt _dmarc.gmail.com` để chỉ ra chuỗi `v=DMARC1; p=reject...`.
-   - *(Dự phòng nếu phòng học mất mạng)*: Chạy `.\check_email_auth.ps1 -SelfTest` và chiếu ảnh kết quả đã chụp tại `audit_results.md`.
-2. **Bước 2 — Tương tác Hộp thư Mô phỏng (2 phút — TV3 điều khiển, TV2 giải thích & mời lớp đoán):**
-   - Mở **Tab 1 (`Hộp thư Mô phỏng`)**, chọn **Mẫu 3 (BEC Spoofing)** và mời giảng viên/sinh viên đoán nhanh *An toàn hay Lừa đảo?* → Bấm **"Soi Raw Header & Xác thực"** để chỉ `SPF=SOFTFAIL`, `DMARC=FAIL`, `Reply-To` lệch sang `freemail.example`.
-   - Chuyển nhanh sang **Mẫu 4 (Lookalike / Punycode)** → chỉ điểm đặc biệt dù `SPF=PASS` nhưng địa chỉ gửi là `xn--micrsoft-7ya.example` và rê chuột lên link để thanh **URL Preview** hiện domain thật `account-reset-portal.example`.
-   - Chuyển sang **Mẫu 6 (Nhân sự — An toàn)** để cho thấy sự đối chiếu cân bằng (không đánh đồng mọi file `.pdf` đều độc hại).
-3. **Bước 3 — Phân tích Tự động trong Email Header Analyzer (1.5 phút — TV3):**
-   - Chuyển sang **Tab 2 (`Phân tích Email Header`)**, bấm nút nạp nhanh **"Mẫu 5: Tệp độc hại"** hoặc chọn tải trực tiếp file `sample_05_malicious_attachment.eml` từ máy.
-   - Chỉ kết quả công cụ tự chấm điểm rủi ro (`100/100 - NGUY HIỂM CAO`), cảnh báo tệp đuôi kép `.pdf.exe`, macro `.docm` và lời dụ *Enable Macros*.
+1. **Bước 1 - Kiểm tra cấu hình DNS trên PowerShell (1 phút - Hữu Điền):**
+   - Chạy lệnh `.\check_email_auth.ps1 -Domains "gmail.com","vietcombank.com.vn"` (nếu phòng học có mạng) hoặc `nslookup -type=txt _dmarc.gmail.com` để chỉ trực tiếp bản ghi `v=DMARC1; p=reject...`.
+   - *(Trường hợp phòng học không có mạng)*: Chạy `.\check_email_auth.ps1 -SelfTest` và chiếu ảnh kết quả đã chụp sẵn trên Slide 15.
+2. **Bước 2 - Thực hành trên Hộp thư Mô phỏng (2 phút - Hữu Điền thao tác, Gia Huy giải thích):**
+   - Tại **Tab 1 (`Hộp thư Mô phỏng`)**, mở **Mẫu 3 (BEC giả danh Giám đốc)**, hỏi nhanh cả lớp thư này an toàn hay lừa đảo, sau đó bấm **"Soi Raw Header & Xác thực"** chỉ ra `SPF=SOFTFAIL`, `DMARC=FAIL` và trường `Reply-To` bị tráo sang `freemail.example`.
+   - Chuyển sang **Mẫu 4 (Tên miền Punycode)**, chỉ ra chi tiết đáng chú ý: dù `SPF=PASS` nhưng địa chỉ gửi là `xn--micrsoft-7ya.example` và khi rê chuột vào link thì thanh xem trước dưới góc trái hiện tên miền thật là `account-reset-portal.example`.
+   - Mở nhanh **Mẫu 6 (Phòng Nhân sự)** để đối chiếu một email nội bộ hợp lệ có đính kèm file `.pdf` sạch.
+3. **Bước 3 - Phân tích tự động file `.eml` (1.5 phút - Hữu Điền):**
+   - Chuyển sang **Tab 2 (`Phân tích Email Header`)**, chọn tải file `sample_05_malicious_attachment.eml` từ máy (hoặc bấm nút nạp nhanh Mẫu 5).
+   - Trình bày kết quả công cụ tự động bóc tách Header, chấm điểm rủi ro `100/100` và liệt kê cảnh báo đuôi kép `.pdf.exe`, file `.docm` cùng câu dụ bật *Enable Macros*.
 
 ---
 
-## 2. Ngân hàng Câu hỏi Q&A Dự phòng (12 Câu hỏi & Gợi ý Trả lời)
+## 2. Danh sách 12 Câu hỏi Hỏi đáp (Q&A) & Gợi ý Trả lời
 
-- [ ] **Q1 (TV2):** *Phân biệt Envelope From (`MAIL FROM` / `Return-Path`) và Header From trong tấn công Email Spoofing?*  
-  → **Gợi ý:** *Envelope From* dùng ở tầng giao thức SMTP để định tuyến và nhận thông báo lỗi trả về; *Header From* là dòng `From:` hiển thị trên giao diện người đọc. SMTP gốc không bắt buộc hai trường này phải giống nhau.
-- [ ] **Q2 (TV2):** *Tại sao tệp nén đặt mật khẩu (`.zip/.rar`) đính kèm email lại dễ vượt qua bộ lọc Gateway?*  
-  → **Gợi ý:** Bộ lọc Email Gateway không có mật khẩu để giải nén và kiểm tra mã độc bên trong nên không quét được chữ ký tĩnh; kẻ tấn công ghi mật khẩu ngay trong nội dung mail để lừa nạn nhân tự giải nén và chạy mã độc trên máy trạm.
-- [ ] **Q3 (TV3):** *Tại sao một email có `SPF=PASS` vẫn có thể là email giả mạo hoặc lừa đảo?*  
-  → **Gợi ý:** Hai trường hợp: (1) Kẻ tấn công đặt `MAIL FROM` bằng tên miền do chính hắn sở hữu nên vượt qua kiểm tra IP của SPF, trong khi giả mạo `Header From` thành nạn nhân (nếu không bật DMARC); (2) Kẻ tấn công đăng ký tên miền Lookalike/Punycode riêng và cấu hình SPF hợp lệ cho chính miền giả đó (như Mẫu 4).
-- [ ] **Q4 (TV3):** *DMARC giải quyết lỗ hổng gì mà SPF và DKIM đứng riêng không giải quyết được?*  
-  → **Gợi ý:** DMARC bổ sung cơ chế **Identifier Alignment** (buộc miền của SPF hoặc DKIM phải khớp với `Header From` mà người dùng nhìn thấy) và cung cấp chính sách xử lý thống nhất (`none`/`quarantine`/`reject`) cùng báo cáo `RUA`/`RUF`.
-- [ ] **Q5 (TV1):** *Trong mô hình Defense in Depth, tại sao nâng cao nhận thức người dùng vẫn không thể thay thế hoàn toàn bằng giải pháp kỹ thuật?*  
-  → **Gợi ý:** Vì các cuộc tấn công BEC hoặc dùng tên miền mới đăng ký có thể đạt chuẩn kỹ thuật (`SPF/DKIM/DMARC=PASS`) và không chứa file độc hay link xấu, nên mắt người dùng được đào tạo và quy trình xác minh đa kênh vẫn là chốt chặn cuối cùng.
-- [ ] **Q6 (TV3):** *Tại sao SPF bị giới hạn tối đa 10 lần tra cứu DNS và bị gãy khi chuyển tiếp email (Forwarding)?*  
-  → **Gợi ý:** Giới hạn 10 DNS lookup (RFC 7208) nhằm chống tấn công khuếch đại/từ chối dịch vụ vào hạ tầng DNS. Khi forwarding, IP gửi mới thuộc máy chủ chuyển tiếp không nằm trong SPF của người gửi ban đầu nên SPF fail (nhờ DKIM + ARC khắc phục).
-- [ ] **Q7 (TV2):** *HTML Smuggling hoạt động như thế nào và khác gì tệp `.exe` đính kèm truyền thống?*  
-  → **Gợi ý:** Kẻ tấn công đính kèm file `.html` vô hại bề ngoài nhưng chứa JavaScript dựng chuỗi base64 thành tệp nhị phân ngay trong trình duyệt của nạn nhân, qua mặt bộ lọc chỉ quét file `.exe` trên đường truyền.
-- [ ] **Q8 (TV3):** *Sự khác nhau giữa chế độ Alignment `Relaxed (r)` và `Strict (s)` trong DMARC?*  
-  → **Gợi ý:** `Relaxed` cho phép khớp chỉ cần cùng tên miền gốc (ví dụ `mail.corp-vn.example` khớp `corp-vn.example`); `Strict` yêu cầu khớp chính xác 100% chuỗi tên miền.
-- [ ] **Q9 (TV1):** *Nên triển khai chính sách DMARC theo lộ trình nào để tránh chặn nhầm email hợp lệ của doanh nghiệp?*  
-  → **Gợi ý:** Bắt đầu từ `p=none` kết hợp đọc báo cáo `RUA` để rà soát mọi dịch vụ gửi hợp pháp (CRM, marketing, thông báo tự động), sau đó nâng lên `p=quarantine` (tăng dần `pct=10..100`) và cuối cùng khóa ở `p=reject`.
-- [ ] **Q10 (TV1):** *Vai trò của ISO/IEC 27002:2022 và 27005:2022 trong giải pháp của nhóm là gì?*  
-  → **Gợi ý:** ISO/IEC 27002:2022 cung cấp khung kiểm soát cân bằng cả *Công nghệ*, *Con người* và *Tổ chức* (không thiên lệch kỹ thuật); ISO/IEC 27005:2022 giúp lượng hóa mức rủi ro email để ưu tiên đầu tư biện pháp phù hợp.
-- [ ] **Q11 (TV3):** *Tại sao nhóm chọn xây dựng Web App mô phỏng chạy offline thay vì dựng một Mail Server thật để gửi thư giả mạo?*  
-  → **Gợi ý:** Chạy offline bảo đảm 100% an toàn đạo đức an ninh mạng (không phát tán email giả ra ngoài, không chứa mã độc thật) và loại bỏ rủi ro mất mạng/lỗi dịch vụ khi trình diễn trước hội đồng.
-- [ ] **Q12 (TV1/TV3):** *Nếu phải mở rộng đồ án thành sản phẩm triển khai trong doanh nghiệp thật, bước tiếp theo là gì?*  
-  → **Gợi ý:** Tích hợp kết nối IMAP/Graph API qua Gateway có kiểm soát quyền, kết hợp mô hình ML/NLP phát hiện ngữ điệu BEC/tiếng Việt, kết nối hệ thống SOC/SOAR để tự động thu hồi thư lừa đảo.
-
-- [ ] **[TODO (Cả nhóm)]:** Tự luyện trả lời không nhìn tài liệu tất cả 12 câu hỏi trên theo đúng phân công `TV1 / TV2 / TV3` trước buổi bảo vệ.
+- [ ] **Câu 1 (Gia Huy):** *Phân biệt Envelope From (`MAIL FROM` / `Return-Path`) và Header From trong tấn công Email Spoofing?*  
+  -> *Trả lời:* *Envelope From* được dùng ở bước hội thoại SMTP giữa các máy chủ mail để định tuyến và nhận thông báo lỗi trả về; còn *Header From* nằm trong phần dữ liệu thư để hiển thị tên/địa chỉ cho người đọc. Giao thức SMTP gốc không bắt buộc hai địa chỉ này phải trùng nhau.
+- [ ] **Câu 2 (Gia Huy):** *Vì sao kẻ tấn công hay nén file đính kèm có đặt mật khẩu rồi ghi mật khẩu ngay trong nội dung email?*  
+  -> *Trả lời:* Cổng bảo mật email (Gateway) không tự giải nén được tệp có mật khẩu nên không quét được mã độc bên trong; kẻ xấu ghi sẵn mật khẩu trong thư để dụ người nhận tự giải nén và chạy mã độc trên máy cá nhân.
+- [ ] **Câu 3 (Hữu Điền):** *Tại sao có trường hợp `SPF=PASS` nhưng email vẫn là email giả mạo hoặc lừa đảo?*  
+  -> *Trả lời:* Có hai lý do chính: (1) Nếu miền nạn nhân chưa bật DMARC, kẻ tấn công dùng miền riêng của hắn ở `MAIL FROM` nên vượt qua SPF, nhưng vẫn điền miền nạn nhân vào `Header From`; (2) Kẻ tấn công mua tên miền gần giống/Punycode riêng và tự cấu hình bản ghi SPF hợp lệ cho chính miền giả đó (như Mẫu 4).
+- [ ] **Câu 4 (Hữu Điền):** *DMARC bổ sung cơ chế gì mà SPF và DKIM đứng riêng lẻ chưa giải quyết được?*  
+  -> *Trả lời:* DMARC bổ sung bước kiểm tra **khớp định danh (Identifier Alignment)** bắt buộc miền đã xác thực bởi SPF hoặc DKIM phải trùng với miền hiển thị ở `Header From`, đồng thời cho phép chủ tên miền công bố chính sách xử lý (`none`/`quarantine`/`reject`) và nhận báo cáo thống kê (`RUA`/`RUF`).
+- [ ] **Câu 5 (Quang Tùng):** *Khi đã có bộ lọc thư rác và SPF/DKIM/DMARC rồi, tại sao vẫn phải đào tạo nhận thức người dùng?*  
+  -> *Trả lời:* Các kịch bản như BEC từ tài khoản đối tác bị chiếm quyền hoặc từ tên miền mới đăng ký có thể vượt qua đầy đủ kiểm tra SPF/DKIM/DMARC và không chứa mã độc hay đường dẫn xấu. Khi đó sự cảnh giác của nhân viên và quy trình gọi điện xác minh độc lập là chốt chặn cuối cùng.
+- [ ] **Câu 6 (Hữu Điền):** *Tại sao SPF giới hạn tối đa 10 lần tra cứu DNS và hay gặp lỗi khi chuyển tiếp email (Forwarding)?*  
+  -> *Trả lời:* Giới hạn 10 lần tra cứu theo RFC 7208 nhằm tránh lợi dụng SPF gây quá tải/tấn công DoS lên máy chủ DNS. Khi hộp thư tự động forward, IP kết nối tới máy nhận cuối là IP của máy chủ chuyển tiếp chứ không còn nằm trong danh sách SPF của miền gửi gốc (khắc phục nhờ chữ ký DKIM và chuẩn ARC).
+- [ ] **Câu 7 (Gia Huy):** *Kỹ thuật HTML Smuggling hoạt động ra sao?*  
+  -> *Trả lời:* Thay vì gửi trực tiếp file `.exe` qua mạng dễ bị chặn, kẻ tấn công đính kèm file `.html` chứa đoạn mã JavaScript ghép dữ liệu mã hóa thành tệp độc hại ngay bên trong trình duyệt trên máy người nhận.
+- [ ] **Câu 8 (Hữu Điền):** *Chế độ khớp `Relaxed (r)` và `Strict (s)` trong DMARC khác nhau thế nào?*  
+  -> *Trả lời:* `Relaxed` cho phép khớp cùng tên miền tổ chức gốc (ví dụ `mail.corp-vn.example` khớp với `corp-vn.example`), còn `Strict` đòi hỏi hai chuỗi tên miền phải giống hệt nhau hoàn toàn.
+- [ ] **Câu 9 (Quang Tùng):** *Vì sao doanh nghiệp không bật ngay `DMARC p=reject` từ ngày đầu tiên?*  
+  -> *Trả lời:* Nếu bật `p=reject` ngay khi chưa rà soát hết các dịch vụ gửi mail hợp lệ của công ty (như phần mềm kế toán, CRM, gửi thông báo tự động), chính các email thật của công ty sẽ bị từ chối. Do đó phải đi từ `p=none` để đọc báo cáo `RUA`, cấu hình đủ SPF/DKIM rồi mới nâng dần lên `quarantine` và `reject`.
+- [ ] **Câu 10 (Quang Tùng):** *Việc đưa ISO/IEC 27002:2022 và ISO/IEC 27005:2022 vào Chương 4 mang lại ý nghĩa gì?*  
+  -> *Trả lời:* ISO/IEC 27002 giúp tổ chức triển khai đồng đều cả kiểm soát công nghệ, con người và quy trình nội bộ thay vì chỉ mua phần mềm; còn ISO/IEC 27005 giúp đánh giá mức độ rủi ro để ưu tiên nguồn lực xử lý các kịch bản thiệt hại nặng nhất như BEC và Ransomware.
+- [ ] **Câu 11 (Hữu Điền):** *Vì sao nhóm xây dựng ứng dụng Web chạy cục bộ thay vì dựng máy chủ gửi mail giả thật?*  
+  -> *Trả lời:* Mô phỏng cục bộ với tên miền `.example` đảm bảo nguyên tắc an toàn và đạo đức môn học (không phát tán email giả mạo ra mạng thật, không lưu trữ mã độc thật), đồng thời hoạt động ổn định khi báo cáo trên lớp không phụ thuộc mạng Internet.
+- [ ] **Câu 12 (Quang Tùng / Hữu Điền):** *Nếu phát triển tiếp đề tài này cho doanh nghiệp vừa và nhỏ thì nên làm thêm phần nào?*  
+  -> *Trả lời:* Có thể viết thêm plugin tích hợp trực tiếp vào Outlook/Webmail để cảnh báo ngay khi mở thư, kết hợp mô hình NLP tiếng Việt nhận diện nội dung hối thúc chuyển tiền và kết nối hệ thống thu hồi thư tự động.

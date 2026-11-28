@@ -9,7 +9,7 @@ Authentication-Results: mx.corp-vn.example;
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=corp-vn.example;
 	s=mail2026; h=from:to:subject:date:message-id;
 	bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
-	b=SIMULATED_VALID_DKIM_SIGNATURE_FOR_TRAINING_SAMPLE_06
+	b=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA9p4tQw8Sample06==
 From: "Phong Nhan Su - CorpVN" <hr@corp-vn.example>
 To: "Toan the Nhan vien" <staff@corp-vn.example>
 Subject: Lich kham suc khoe dinh ky nam 2026 cho nhan vien
@@ -33,6 +33,6 @@ Content-Type: text/html; charset=UTF-8
 Content-Type: text/plain; name="Lich_Kham_Suc_Khoe_2026.pdf"
 Content-Disposition: attachment; filename="Lich_Kham_Suc_Khoe_2026.pdf"
 
-[SIMULATED SAFE PLACEHOLDER ONLY - LEGITIMATE PDF METADATA]
+[Tep van ban mo phong phuc vu do an mon hoc - Noi dung PDF lich kham suc khoe]
 Noi dung mo phong lich kham suc khoe dinh ky nam 2026.
 ------=_Part_Sample06_Boundary--

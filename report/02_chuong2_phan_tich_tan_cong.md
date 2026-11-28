@@ -1,7 +1,7 @@
 # Chương 2: Phân tích các Cuộc tấn công Giả mạo và Lừa đảo qua Email
 
-> **Phụ trách:** Thành viên 2 (Threat & Malware Analyst)  
-> **Tài liệu tham chiếu:** `Bai 7` (S43–S45, S50–S52), `Bài 8 - Malicious Code.pptx` (S3–S8, S18, S25, S29–S38), `L1` (S29, S33)
+> **Sinh viên thực hiện:** Nguyễn Gia Huy (`23120273`)  
+> **Tài liệu môn học tham khảo:** `Bai 7` (S43-S45, S50-S52), `Bài 8 - Malicious Code.pptx` (S3-S8, S18, S25, S29-S38), `L1` (S29, S33)
 
 ---
 

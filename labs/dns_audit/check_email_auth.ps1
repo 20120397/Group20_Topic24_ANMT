@@ -1,7 +1,7 @@
 ﻿<#
 .SYNOPSIS
     Script kiểm tra cấu hình xác thực Email (MX, SPF, DMARC) qua DNS.
-    Phụ trách: Thành viên 3 (Auth & Simulation Engineer).
+    Sinh viên thực hiện: Nguyễn Lê Hữu Điền (23120233).
 
 .EXAMPLE
     .\check_email_auth.ps1 -SelfTest

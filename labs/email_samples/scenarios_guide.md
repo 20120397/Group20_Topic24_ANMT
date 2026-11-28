@@ -1,7 +1,7 @@
 # Bộ Mẫu Email `.eml` An toàn & Hướng dẫn Đáp án (Scenarios Guide)
 
-> **Phụ trách:** Thành viên 2 (Threat & Malware Analyst)  
-> **Quy tắc an toàn:** Toàn bộ 6 mẫu chỉ dùng tên miền giả định `.example` (RFC 2606); tệp đính kèm là văn bản mô phỏng vô hại, tuyệt đối không chứa mã độc hay đường dẫn thật.
+> **Sinh viên thực hiện:** Nguyễn Gia Huy (`23120273`)  
+> **Lưu ý an toàn:** Toàn bộ 6 mẫu sử dụng tên miền giả định `.example` (RFC 2606); phần đính kèm là văn bản mô phỏng phục vụ đồ án, không chứa mã thực thi hay đường dẫn độc hại thật.
 
 ---
 

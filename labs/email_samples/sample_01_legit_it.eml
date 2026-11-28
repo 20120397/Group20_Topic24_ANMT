@@ -9,7 +9,7 @@ Authentication-Results: mx.corp-vn.example;
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=corp-vn.example;
 	s=mail2026; h=from:to:subject:date:message-id;
 	bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
-	b=SIMULATED_VALID_DKIM_SIGNATURE_FOR_TRAINING_SAMPLE_01
+	b=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA7x9kLm2Sample01==
 From: "Phong Ky Thuat IT - CorpVN" <it-support@corp-vn.example>
 To: "Toan the Nhan vien" <staff@corp-vn.example>
 Subject: [Thong bao] Bao tri he thong mang noi bo cuoi tuan (28/11)

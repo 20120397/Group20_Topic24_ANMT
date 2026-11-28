@@ -1,7 +1,7 @@
 # Chương 3: Cơ chế SPF, DKIM, DMARC trong Xác thực Email
 
-> **Phụ trách:** Thành viên 3 (Auth & Simulation Engineer)  
-> **Tài liệu tham chiếu:** `Bai 7 - Web - DHCP - DNS - Email Security.pptx` (S29–S42, S50–S54), `Lab5. Web -DHCP-DNS-Email Security.docx`
+> **Sinh viên thực hiện:** Nguyễn Lê Hữu Điền (`23120233`)  
+> **Tài liệu môn học tham khảo:** `Bai 7 - Web - DHCP - DNS - Email Security.pptx` (S29-S42, S50-S54), `Lab5. Web -DHCP-DNS-Email Security.docx`
 
 ---
 

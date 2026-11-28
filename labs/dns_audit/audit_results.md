@@ -1,6 +1,6 @@
 # Kết quả Khảo sát Cấu hình Xác thực Email (DNS Audit)
 
-> **Phụ trách:** Thành viên 3 (Auth & Simulation Engineer)  
+> **Sinh viên thực hiện:** Nguyễn Lê Hữu Điền (`23120233`)  
 > **Công cụ sử dụng:** Script PowerShell [check_email_auth.ps1](check_email_auth.ps1), `Resolve-DnsName`, `nslookup`
 
 ---
