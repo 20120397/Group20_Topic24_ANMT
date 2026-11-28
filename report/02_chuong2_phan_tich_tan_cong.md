@@ -59,19 +59,7 @@ Cụ thể hơn, kiến trúc gửi thư điện tử theo tiêu chuẩn kỹ th
 
 Do SMTP nguyên bản không yêu cầu `Envelope From` phải khớp với `Header From`, cũng không kiểm chứng máy chủ phát tán có được chủ sở hữu tên miền ủy quyền hay không, kẻ tấn công có thể tùy ý tạo ra các tiêu đề giả mạo để đánh lừa người đọc.
 
-```mermaid
-sequenceDiagram
-    participant Attacker as "May chu Ke tan cong<br/>(relay-open88.example)"
-    participant VictimMTA as "MTA Nan nhan<br/>(mx.corp-vn.example)"
-    participant User as "Hop thu Ke toan<br/>(ketoan@corp-vn.example)"
-
-    Attacker->>VictimMTA: "SMTP MAIL FROM: <mailer@relay-open88.example>"
-    Attacker->>VictimMTA: "DATA -> From: 'Giam doc Tran Minh Quan (CEO)' <ceo.corpvn@external-mail.example>"
-    Attacker->>VictimMTA: "DATA -> Reply-To: 'Tran Minh Quan' <tranminhquan.private2026@freemail.example>"
-    Note over VictimMTA: "Kiem tra xac thuc:<br/>spf=softfail (relay-open88.example)<br/>dkim=none | dmarc=fail (p=NONE; dis=NONE)"
-    VictimMTA->>User: "Chuyen phat vao hop thu (vi external-mail.example co p=NONE)<br/>Hien thi noi bat: Giam doc Tran Minh Quan (CEO)"
-    User-->>Attacker: "Neu nan nhan bam Reply -> thu di toi tranminhquan.private2026@freemail.example"
-```
+![Hình 2.1: Cơ chế tách biệt Envelope From, Header From (Display Name Spoofing) và Reply-To trong kịch bản BEC tại sample_03_spoofing_ceo_bec.eml](assets/ch2_spoofing_flow.png)
 *Hình 2.1: Cơ chế tách biệt `Envelope From`, `Header From` (Display Name Spoofing) và `Reply-To` trong kịch bản BEC tại `sample_03_spoofing_ceo_bec.eml`.*
 
 ### 2.2.2. Các Kỹ thuật Giả mạo Địa chỉ Phổ biến
@@ -124,7 +112,10 @@ Khi bộ nhớ đệm của máy chủ DNS bị tiêm bản ghi giả mạo (*Ba
 
 ## 2.4. Tệp đính kèm Độc hại (Malicious Attachments)
 
-Theo *Bài 9 - Malicious Code.pptx* (Slide 31 — *Where does Malicious Code Hide?*), **Email đứng ở vị trí số 1** trong các kênh ẩn náu và phát tán **Mã độc (*Malware*)**, xếp trên cả nội dung web và tải tệp trực tiếp. Mã độc là tập lệnh chạy trên máy tính nạn nhân nhằm thực hiện hành vi theo ý muốn kẻ tấn công (*Bài 9*, Slide 3), thường nhắm tới ba nhóm mục tiêu cốt lõi: đánh cắp dữ liệu (*Data*: bí mật doanh nghiệp IP, thông tin định danh cá nhân PII), trục lợi tài chính (*Money*: thông tin tài chính, tiền mã hóa) hoặc phá hoại hệ thống (*Damage*) (*Bài 9*, Slide 5). Trong chuỗi tấn công *Cyber Kill Chain* (*Bài 9*, Slide 6), email đính kèm đóng vai trò mắt xích trung tâm tại bước **Phát tán (*Delivery*)** để dẫn sang **Khai thác (*Exploitation*)** và **Cài đặt (*Installation*)** trên máy trạm.
+Theo *Bài 9 - Malicious Code.pptx* (Slide 31 — *Where does Malicious Code Hide?*), **Email đứng ở vị trí số 1** trong các kênh ẩn náu và phát tán **Mã độc (*Malware*)**, xếp trên cả nội dung web và tải tệp trực tiếp. Mã độc là tập lệnh chạy trên máy tính nạn nhân nhằm thực hiện hành vi theo ý muốn kẻ tấn công (*Bài 9*, Slide 3), thường nhắm tới ba nhóm mục tiêu cốt lõi: đánh cắp dữ liệu (*Data*: bí mật doanh nghiệp IP, thông tin định danh cá nhân PII), trục lợi tài chính (*Money*: thông tin tài chính, tiền mã hóa) hoặc phá hoại hệ thống (*Damage*) (*Bài 9*, Slide 5). Trong chuỗi tấn công *Cyber Kill Chain* (*Bài 9*, Slide 6), email đính kèm đóng vai trò mắt xích trung tâm tại bước **Phát tán (*Delivery*)** để dẫn sang **Khai thác (*Exploitation*)** và **Cài đặt (*Installation*)** trên máy trạm (*Hình 2.2*).
+
+![Hình 2.2: Chuỗi phát tán tệp đính kèm độc hại qua Email và nguyên lý phân tích mã độc](assets/ch2_malware_delivery_flow.png)
+*Hình 2.2: Chuỗi phát tán tệp đính kèm độc hại qua Email, các nhóm tải trọng (Payload) và nguyên lý phân tích mã độc (liên hệ `Bài 9 - Malicious Code.pptx` và `sample_05_malicious_attachment.eml`).*
 
 ### 2.4.1. Các Kỹ thuật Ngụy trang và Giao nhận Tệp đính kèm Độc hại
 
