@@ -1,6 +1,6 @@
 # Chương 3: Cơ chế SPF, DKIM, DMARC trong Xác thực Email
 
-> **Phụ trách:** Thành viên 3 — Nguyễn Lê Hữu Điền (`23120233`, *Auth & Simulation Engineer*)  
+> **Sinh viên thực hiện:** Nguyễn Lê Hữu Điền (`23120233`, *Auth & Simulation Engineer*)  
 > **Tài liệu tham chiếu:** `Bai 7 - Web - DHCP - DNS - Email Security.pptx` (S29–S49, S50–S54), `Lab5. Web -DHCP-DNS-Email Security.docx`, `RFC 7208` (SPF), `RFC 6376` (DKIM), `RFC 7489` (DMARC), `RFC 8617` (ARC)
 
 ---
@@ -152,7 +152,7 @@ RFC 7489 quy định hai mức độ khắt khe cho việc so khớp thông qua 
 | **2. Gửi từ Subdomain** | `corp-vn.example` | `bounce.corp-vn.example` (`PASS`) | Không có (`NONE`) | **`r`: PASS** / **`s`: FAIL** | Cùng Organizational Domain `corp-vn.example` nhưng khác subdomain. |
 | **3. Spoofing `From` trực tiếp** | `vcb-bank.example` | `promo-99.example` (`PASS`*) | Không có (`NONE`) | **FAIL** (`r` & `s`) | Kẻ tấn công vượt qua SPF trên miền của hắn nhưng trượt Alignment với `Header From` (mô phỏng ở *Mẫu 2* & *Mẫu 3*). |
 | **4. Email bị chuyển tiếp** | `corp-vn.example` | `forwarder.example` (`FAIL`) | `corp-vn.example` (`PASS`) | **PASS** (`r` & `s`) | SPF bị gãy qua máy chủ trung gian nhưng DKIM vẫn còn chữ ký khớp `Header From` nên cứu được DMARC. |
-| **5. Kẻ tấn công dùng miền Lookalike** | `xn--micrsoft-7ya.example` | `xn--micrsoft-7ya.example` (`PASS`) | `xn--micrsoft-7ya.example` (`PASS`) | **PASS** *(Cảnh báo!)* | Nếu hacker tự đăng ký miền giả mạo gần giống và cấu hình đầy đủ, DMARC vẫn PASS — minh chứng cần kết hợp lọc nội dung & nhận thức người dùng (*Mẫu 4*). |
+| **5. Kẻ tấn công dùng miền Lookalike** | `xn--micrsoft-qbh.example` | `xn--micrsoft-qbh.example` (`PASS`) | `xn--micrsoft-qbh.example` (`PASS`) | **PASS** *(Cảnh báo!)* | Nếu hacker tự đăng ký miền giả mạo gần giống (`micrоsoft.example` dùng chữ `о` Cyrillic `U+043E`) và cấu hình đầy đủ, DMARC vẫn PASS — minh chứng cần kết hợp lọc nội dung & nhận thức người dùng (*Mẫu 4*). |
 
 *Bảng 3.4: Đối chiếu các tình huống đánh giá Identifier Alignment giữa chế độ Relaxed (`r`) và Strict (`s`).*
 
