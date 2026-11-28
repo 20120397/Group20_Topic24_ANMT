@@ -1,6 +1,6 @@
 /**
  * Bộ phân tích Raw Email Header & Phát hiện dấu hiệu Phishing / Email Spoofing.
- * Phụ trách: Thành viên 3 (Auth & Simulation Engineer).
+ * Phụ trách: Thành viên 3 — Nguyễn Lê Hữu Điền (23120233, Auth & Simulation Engineer).
  */
 
 function extractEmailInfo(value) {
@@ -16,9 +16,9 @@ function extractEmailInfo(value) {
     displayName = (angleMatch[1] || "").trim();
     address = angleMatch[2].trim().toLowerCase();
   } else {
-    const plainMatch = clean.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);
+    const plainMatch = clean.match(/([^\s<>]+@[^\s<>]+)/);
     if (plainMatch) {
-      address = plainMatch[1].toLowerCase();
+      address = plainMatch[1].replace(/^[<"']+|[>"',;]+$/g, "").toLowerCase();
     }
   }
 
@@ -26,11 +26,24 @@ function extractEmailInfo(value) {
   return { raw: clean, displayName, address, domain };
 }
 
+function extractDomainToken(value) {
+  if (!value) return "";
+  const clean = String(value).trim().replace(/^[<("']+|[>)"';,]+$/g, "").toLowerCase();
+  if (clean.includes("@")) {
+    return clean.split("@")[1];
+  }
+  return /^[^\s@]+\.[^\s@]{2,}$/.test(clean) ? clean : "";
+}
+
 function getRegistrableDomain(domain) {
   if (!domain) return "";
   const parts = domain.toLowerCase().split(".").filter(Boolean);
   if (parts.length <= 2) return parts.join(".");
-  if (parts.length >= 3 && ["vn", "uk", "jp", "au"].includes(parts[parts.length - 1]) && ["com", "edu", "gov", "net", "org"].includes(parts[parts.length - 2])) {
+  if (
+    parts.length >= 3 &&
+    ["vn", "uk", "jp", "au"].includes(parts[parts.length - 1]) &&
+    ["com", "edu", "gov", "net", "org"].includes(parts[parts.length - 2])
+  ) {
     return parts.slice(-3).join(".");
   }
   return parts.slice(-2).join(".");
@@ -44,6 +57,43 @@ function domainsRelated(d1, d2) {
 function extractHostFromUrl(urlStr) {
   const m = String(urlStr || "").match(/^https?:\/\/([^/:?#\s]+)/i);
   return m ? m[1].toLowerCase() : "";
+}
+
+function inspectReceivedHeaders(receivedHeaders) {
+  if (!Array.isArray(receivedHeaders) || receivedHeaders.length === 0) {
+    return { transportEncrypted: null, senderIp: "" };
+  }
+
+  let hasEncryptedHop = false;
+  let hasPlaintextHop = false;
+  let senderIp = "";
+
+  for (let i = 0; i < receivedHeaders.length; i++) {
+    const hop = receivedHeaders[i];
+    if (/\b(esmtpsa?|tls[\w.-]*|ssl)\b/i.test(hop)) {
+      hasEncryptedHop = true;
+    } else if (/\bwith\s+smtp\b(?!s)/i.test(hop)) {
+      hasPlaintextHop = true;
+    }
+  }
+
+  // Originating hop is normally the last Received header in top-to-bottom order
+  for (let i = receivedHeaders.length - 1; i >= 0; i--) {
+    const ipMatch = receivedHeaders[i].match(/\[(\d{1,3}(?:\.\d{1,3}){3})\]/);
+    if (ipMatch) {
+      senderIp = ipMatch[1];
+      break;
+    }
+  }
+
+  let transportEncrypted = null;
+  if (hasEncryptedHop && !hasPlaintextHop) {
+    transportEncrypted = true;
+  } else if (hasPlaintextHop) {
+    transportEncrypted = false;
+  }
+
+  return { transportEncrypted, senderIp };
 }
 
 function parseRawEmail(rawText) {
@@ -79,10 +129,14 @@ function parseRawEmail(rawText) {
   const spfMatch = authRaw.match(/\bspf=(pass|fail|softfail|neutral|none|temperror|permerror)\b/i);
   const dkimMatch = authRaw.match(/\bdkim=(pass|fail|none|neutral|temperror|permerror)\b/i);
   const dmarcMatch = authRaw.match(/\bdmarc=(pass|fail|none|bestguesspass|temperror|permerror)\b/i);
+  const smtpMailFromMatch = authRaw.match(/\bsmtp\.mailfrom=([^\s;]+)/i);
+  const smtpMailFromDomain = smtpMailFromMatch ? extractDomainToken(smtpMailFromMatch[1]) : "";
 
   const dkimSig = headers["dkim-signature"] || "";
   const dkimDomainMatch = dkimSig.match(/\bd=([^;\s]+)/i) || authRaw.match(/header\.d=([^;\s]+)/i);
   const dkimSelectorMatch = dkimSig.match(/\bs=([^;\s]+)/i) || authRaw.match(/header\.s=([^;\s]+)/i);
+
+  const { transportEncrypted, senderIp } = inspectReceivedHeaders(receivedHeaders);
 
   const attachments = [];
   const seenFiles = new Set();
@@ -119,10 +173,13 @@ function parseRawEmail(rawText) {
     rawLength: text.length,
     from,
     returnPath,
+    smtpMailFromDomain,
     replyTo,
     subject: headers["subject"] || "",
     date: headers["date"] || "",
     receivedCount: receivedHeaders.length,
+    transportEncrypted,
+    senderIp,
     auth: {
       spf: spfMatch ? spfMatch[1].toLowerCase() : "unknown",
       dkim: dkimMatch ? dkimMatch[1].toLowerCase() : "unknown",
@@ -145,72 +202,162 @@ function analyzeEmail(rawText) {
   if (!rawText || !rawText.trim()) {
     return {
       metadata: parsed,
-      findings: [{ level: "WARNING", title: "Chưa có dữ liệu đầu vào", detail: "Hãy dán Raw Email Header hoặc chọn một mẫu có sẵn." }],
+      findings: [
+        {
+          level: "WARNING",
+          title: "Chưa có dữ liệu đầu vào",
+          detail: "Hãy dán Raw Email Header hoặc chọn một mẫu có sẵn."
+        }
+      ],
       riskScore: 0,
       riskLevel: "warning",
-      alignment: { spfAligned: false, dkimAligned: false }
+      alignment: {
+        spfAligned: false,
+        dkimAligned: false,
+        dmarcAligned: false,
+        fromReturnPathMatch: false
+      }
     };
   }
 
-  // 1. SPF / DKIM / DMARC
+  // 1. SPF / DKIM / DMARC Authentication-Results
   if (parsed.auth.spf === "fail") {
     score += 25;
-    findings.push({ level: "CRITICAL", title: "SPF thất bại (spf=fail)", detail: "IP máy chủ gửi không nằm trong danh sách được ủy quyền của tên miền." });
+    findings.push({
+      level: "CRITICAL",
+      title: "SPF thất bại (spf=fail)",
+      detail: "IP máy chủ gửi không nằm trong danh sách được ủy quyền của tên miền."
+    });
   } else if (parsed.auth.spf === "softfail") {
     score += 15;
-    findings.push({ level: "WARNING", title: "SPF cảnh báo (spf=softfail)", detail: "Máy chủ gửi không được ủy quyền rõ ràng (~all)." });
+    findings.push({
+      level: "WARNING",
+      title: "SPF cảnh báo (spf=softfail)",
+      detail: "Máy chủ gửi không được ủy quyền rõ ràng (~all)."
+    });
   } else if (parsed.auth.spf === "none") {
     score += 10;
-    findings.push({ level: "WARNING", title: "Thiếu bản ghi SPF (spf=none)", detail: "Không có chính sách SPF để kiểm chứng IP gửi." });
+    findings.push({
+      level: "WARNING",
+      title: "Thiếu bản ghi SPF (spf=none)",
+      detail: "Không có chính sách SPF để kiểm chứng IP gửi."
+    });
   } else if (parsed.auth.spf === "pass") {
-    findings.push({ level: "OK", title: "SPF đạt (spf=pass)", detail: "IP máy chủ gửi hợp lệ theo cấu hình SPF của miền gửi thư." });
+    findings.push({
+      level: "OK",
+      title: "SPF đạt (spf=pass)",
+      detail: "IP máy chủ gửi hợp lệ theo cấu hình SPF của miền MAIL FROM."
+    });
   }
 
   if (parsed.auth.dkim === "fail") {
     score += 25;
-    findings.push({ level: "CRITICAL", title: "DKIM thất bại (dkim=fail)", detail: "Chữ ký số không hợp lệ hoặc nội dung đã bị thay đổi trên đường truyền." });
+    findings.push({
+      level: "CRITICAL",
+      title: "DKIM thất bại (dkim=fail)",
+      detail: "Chữ ký số không hợp lệ hoặc nội dung đã bị thay đổi trên đường truyền."
+    });
   } else if (parsed.auth.dkim === "none") {
     score += 10;
-    findings.push({ level: "WARNING", title: "Không có chữ ký DKIM (dkim=none)", detail: "Email không được ký số xác thực nguồn gốc và toàn vẹn." });
+    findings.push({
+      level: "WARNING",
+      title: "Không có chữ ký DKIM (dkim=none)",
+      detail: "Email không được ký số xác thực nguồn gốc và toàn vẹn."
+    });
   } else if (parsed.auth.dkim === "pass") {
-    findings.push({ level: "OK", title: "DKIM đạt (dkim=pass)", detail: "Chữ ký số DKIM hợp lệ (" + (parsed.dkimDomain || "verified") + ")." });
+    findings.push({
+      level: "OK",
+      title: "DKIM đạt (dkim=pass)",
+      detail: "Chữ ký số DKIM hợp lệ (" + (parsed.dkimDomain || "verified") + ")."
+    });
   }
 
   if (parsed.auth.dmarc === "fail") {
     score += 25;
-    findings.push({ level: "CRITICAL", title: "DMARC thất bại (dmarc=fail)", detail: "Email không vượt qua kiểm tra căn chỉnh định danh với Header From." });
+    findings.push({
+      level: "CRITICAL",
+      title: "DMARC thất bại (dmarc=fail)",
+      detail: "Email không vượt qua kiểm tra căn chỉnh định danh với Header From."
+    });
   } else if (parsed.auth.dmarc === "none") {
     score += 15;
-    findings.push({ level: "WARNING", title: "Chưa áp dụng DMARC (dmarc=none)", detail: "Tên miền thiếu chính sách bảo vệ DMARC chống giả mạo Header From." });
+    findings.push({
+      level: "WARNING",
+      title: "Chưa áp dụng DMARC (dmarc=none)",
+      detail: "Tên miền thiếu chính sách bảo vệ DMARC chống giả mạo Header From."
+    });
   } else if (parsed.auth.dmarc === "pass") {
-    findings.push({ level: "OK", title: "DMARC đạt (dmarc=pass)", detail: "Đã xác thực và khớp định danh với Header From." });
+    findings.push({
+      level: "OK",
+      title: "DMARC đạt (dmarc=pass)",
+      detail: "Đã xác thực và khớp định danh với Header From."
+    });
   }
 
-  // 2. Domain Alignment (From vs Return-Path / DKIM d=)
-  const spfAligned = Boolean(parsed.from.domain && parsed.returnPath.domain && domainsRelated(parsed.from.domain, parsed.returnPath.domain));
-  const dkimAligned = Boolean(parsed.from.domain && parsed.dkimDomain && domainsRelated(parsed.from.domain, parsed.dkimDomain));
+  // 2. Identifier Alignment (RFC 7489): From vs Return-Path / smtp.mailfrom & DKIM d=
+  const spfDomain = parsed.returnPath.domain || parsed.smtpMailFromDomain;
+  const fromReturnPathMatch = Boolean(
+    parsed.from.domain && spfDomain && domainsRelated(parsed.from.domain, spfDomain)
+  );
+  const spfAligned = parsed.auth.spf === "pass" && fromReturnPathMatch;
+  const dkimAligned =
+    parsed.auth.dkim === "pass" &&
+    Boolean(parsed.from.domain && parsed.dkimDomain && domainsRelated(parsed.from.domain, parsed.dkimDomain));
+  const dmarcAligned = spfAligned || dkimAligned;
 
-  if (parsed.from.domain && parsed.returnPath.domain && !spfAligned) {
+  if (parsed.from.domain && spfDomain && !fromReturnPathMatch) {
     score += 20;
     findings.push({
       level: "CRITICAL",
       title: "Lệch tên miền From và Return-Path",
-      detail: `Header From (${parsed.from.domain}) không khớp Return-Path (${parsed.returnPath.domain}) — dấu hiệu Email Spoofing.`
+      detail: `Header From (${parsed.from.domain}) không khớp Return-Path/MAIL FROM (${spfDomain}) — dấu hiệu Email Spoofing.`
     });
   } else if (spfAligned) {
-    findings.push({ level: "OK", title: "Khớp tên miền From và Return-Path", detail: `Cùng thuộc tên miền ${getRegistrableDomain(parsed.from.domain)}.` });
+    findings.push({
+      level: "OK",
+      title: "SPF Alignment đạt chuẩn",
+      detail: `SPF=PASS và Header From khớp miền MAIL FROM (${getRegistrableDomain(parsed.from.domain)}).`
+    });
+  } else if (fromReturnPathMatch && parsed.auth.spf !== "pass") {
+    findings.push({
+      level: "INFO",
+      title: "Tên miền From khớp Return-Path nhưng SPF chưa PASS",
+      detail: `Cùng tên miền ${getRegistrableDomain(parsed.from.domain)} nhưng trạng thái SPF là '${parsed.auth.spf}', chưa đạt SPF Alignment.`
+    });
   }
 
   if (parsed.from.domain && parsed.dkimDomain && !dkimAligned) {
     score += 15;
     findings.push({
       level: "WARNING",
-      title: "Tên miền ký DKIM không khớp From",
-      detail: `DKIM ký bởi ${parsed.dkimDomain}, khác với Header From (${parsed.from.domain}).`
+      title: "DKIM không đạt Alignment với Header From",
+      detail: `DKIM ký bởi ${parsed.dkimDomain} (dkim=${parsed.auth.dkim}), không đạt căn chỉnh với Header From (${parsed.from.domain}).`
+    });
+  } else if (dkimAligned) {
+    findings.push({
+      level: "OK",
+      title: "DKIM Alignment đạt chuẩn",
+      detail: `DKIM=PASS với miền ký d=${parsed.dkimDomain} khớp Header From.`
     });
   }
 
-  // 3. Reply-To Mismatch
+  // 3. Transport TLS Inspection (Received headers)
+  if (parsed.transportEncrypted === false) {
+    score += 10;
+    findings.push({
+      level: "WARNING",
+      title: "Kênh truyền SMTP không mã hóa TLS",
+      detail: "Header Received cho thấy thư đi qua SMTP văn bản rõ (không dùng ESMTPS/TLS)."
+    });
+  } else if (parsed.transportEncrypted === true) {
+    findings.push({
+      level: "OK",
+      title: "Kênh truyền sử dụng mã hóa TLS (ESMTPS)",
+      detail: "Kết nối nhận thư được bảo vệ bởi lớp mã hóa truyền tải TLS."
+    });
+  }
+
+  // 4. Reply-To Mismatch
   if (parsed.from.domain && parsed.replyTo.domain && !domainsRelated(parsed.from.domain, parsed.replyTo.domain)) {
     score += 30;
     findings.push({
@@ -220,7 +367,7 @@ function analyzeEmail(rawText) {
     });
   }
 
-  // 4. Display Name Spoofing
+  // 5. Display Name Spoofing
   if (parsed.from.displayName) {
     const embeddedEmail = parsed.from.displayName.match(/[a-zA-Z0-9._%+-]+@([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);
     if (embeddedEmail && !domainsRelated(embeddedEmail[1], parsed.from.domain)) {
@@ -230,7 +377,11 @@ function analyzeEmail(rawText) {
         title: "Giả mạo Display Name chứa địa chỉ email khác",
         detail: `Display Name chứa miền ${embeddedEmail[1]} nhưng địa chỉ gửi thật là ${parsed.from.address}.`
       });
-    } else if (/(ceo|giam doc|director|bank|security|microsoft)/i.test(parsed.from.displayName) && (parsed.auth.dmarc !== "pass" || (parsed.replyTo.domain && !domainsRelated(parsed.from.domain, parsed.replyTo.domain)))) {
+    } else if (
+      /(ceo|giam doc|director|bank|security|microsoft)/i.test(parsed.from.displayName) &&
+      (parsed.auth.dmarc !== "pass" ||
+        (parsed.replyTo.domain && !domainsRelated(parsed.from.domain, parsed.replyTo.domain)))
+    ) {
       score += 15;
       findings.push({
         level: "WARNING",
@@ -240,8 +391,10 @@ function analyzeEmail(rawText) {
     }
   }
 
-  // 5. Domain Lookalike / Punycode / Subdomain Trick / Anchor Link Mismatch
-  const domainsToCheck = new Set([parsed.from.domain, parsed.returnPath.domain].filter(Boolean));
+  // 6. Domain Lookalike / Punycode / Unicode Homograph / Subdomain Trick / Anchor Link Mismatch
+  const domainsToCheck = new Set(
+    [parsed.from.domain, parsed.returnPath.domain, parsed.smtpMailFromDomain].filter(Boolean)
+  );
   for (const u of parsed.allUrls) {
     const h = extractHostFromUrl(u);
     if (h) domainsToCheck.add(h);
@@ -254,6 +407,14 @@ function analyzeEmail(rawText) {
         level: "CRITICAL",
         title: `Phát hiện tên miền Punycode (${dom})`,
         detail: "Tiền tố xn-- cho thấy tên miền IDN có thể đang dùng ký tự Unicode giả dạng (Homograph Attack)."
+      });
+    }
+    if (/[^\x00-\x7F]/.test(dom)) {
+      score += 35;
+      findings.push({
+        level: "CRITICAL",
+        title: `Phát hiện ký tự Unicode ngoài bảng mã ASCII (${dom})`,
+        detail: "Tên miền chứa ký tự đồng hình (IDN Homograph) dễ gây nhầm lẫn với thương hiệu thật."
       });
     }
     const labels = dom.split(".").filter(Boolean);
@@ -280,7 +441,7 @@ function analyzeEmail(rawText) {
     }
   }
 
-  // 6. Malicious Attachments & Macro Bait
+  // 7. Malicious Attachments & Macro Bait
   for (const fname of parsed.attachments) {
     if (/\.[a-z0-9]{2,5}\.(exe|scr|bat|cmd|vbs|js|jse|ps1|pif|com|hta)$/i.test(fname)) {
       score += 40;
@@ -341,7 +502,7 @@ function analyzeEmail(rawText) {
     findings,
     riskScore,
     riskLevel,
-    alignment: { spfAligned, dkimAligned }
+    alignment: { spfAligned, dkimAligned, dmarcAligned, fromReturnPathMatch }
   };
 }
 
