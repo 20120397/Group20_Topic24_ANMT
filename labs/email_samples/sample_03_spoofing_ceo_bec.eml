@@ -1,25 +1,29 @@
 Return-Path: <mailer@relay-open88.example>
+Delivered-To: ketoan@corp-vn.example
 Received: from relay-open88.example ([203.0.113.154])
-	by mx.corp-vn.example with SMTP
+	by mx.corp-vn.example with SMTP id 20261125-003C
 	for <ketoan@corp-vn.example>; Wed, 25 Nov 2026 09:05:00 +0700
+Received-SPF: softfail (mx.corp-vn.example: transitioning domain of mailer@relay-open88.example does not designate 203.0.113.154 as permitted sender)
+	client-ip=203.0.113.154; envelope-from=mailer@relay-open88.example; helo=relay-open88.example;
 Authentication-Results: mx.corp-vn.example;
-	spf=softfail (domain relay-open88.example does not match header.from) smtp.mailfrom=relay-open88.example;
-	dkim=none;
-	dmarc=fail action=none header.from=corp-vn.example
-From: "Giam doc Tran Minh Quan (CEO)" <ceo@corp-vn.example>
+	spf=softfail (mx.corp-vn.example: transitioning domain of mailer@relay-open88.example does not designate 203.0.113.154 as permitted sender) smtp.mailfrom=mailer@relay-open88.example;
+	dkim=none (message not signed);
+	dmarc=fail (p=NONE sp=NONE dis=NONE; spf alignment failed: smtp.mailfrom=relay-open88.example != header.from=external-mail.example) header.from=external-mail.example
+From: "Giam doc Tran Minh Quan (CEO)" <ceo.corpvn@external-mail.example>
 Reply-To: "Tran Minh Quan" <tranminhquan.private2026@freemail.example>
 To: "Phong Ke Toan" <ketoan@corp-vn.example>
 Subject: Khan: Xu ly thanh toan hop dong mat trong sang nay
 Date: Wed, 25 Nov 2026 09:05:00 +0700
 Message-ID: <20261125090500.003@relay-open88.example>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-Chao em,
+Chào em,
 
-Anh dang hop gap voi doi tac nuoc ngoai nen khong tien nghe dien thoai. Em xu ly chuyen khoan gap so tien 245.000.000 VND cho doi tac tu van theo so tai khoan moi anh vua duyet trong sang nay (truoc 11:00 trua nay).
+Anh đang họp gấp với đối tác nước ngoài nên không tiện nghe điện thoại. Em xử lý chuyển khoản gấp số tiền 245.000.000 VND cho đối tác tư vấn theo số tài khoản mới anh vừa duyệt trong sáng nay (trước 11:00 trưa nay).
 
-Day la thuong vu mua ban bao mat, em tuyet doi khong trao doi voi cac phong ban khac va chi Reply truc tiep vao email nay de anh gui thong tin so tai khoan nhan.
+Đây là thương vụ mua bán bảo mật, em tuyệt đối không trao đổi với các phòng ban khác và chỉ bấm Reply trực tiếp vào email này để anh gửi thông tin số tài khoản nhận.
 
-Tran Minh Quan
-Tong Giam Doc
+Trần Minh Quân
+Tổng Giám Đốc

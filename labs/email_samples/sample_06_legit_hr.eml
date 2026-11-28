@@ -1,13 +1,22 @@
 Return-Path: <hr@corp-vn.example>
+Delivered-To: staff@corp-vn.example
 Received: from mail.corp-vn.example (mail.corp-vn.example [198.51.100.10])
-	by mx.corp-vn.example with ESMTPS (TLSv1.3)
-	for <staff@corp-vn.example>; Wed, 25 Nov 2026 09:50:00 +0700
+	by mx.corp-vn.example with ESMTPS id 20261125-006F
+	(version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384)
+	for <staff@corp-vn.example>; Wed, 25 Nov 2026 09:50:02 +0700
+Received: from hr-portal.corp-vn.example (hr-portal.corp-vn.example [198.51.100.15])
+	by mail.corp-vn.example with ESMTPSA id 20261125-006S
+	(version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384);
+	Wed, 25 Nov 2026 09:50:00 +0700
+Received-SPF: pass (mx.corp-vn.example: domain of hr@corp-vn.example designates 198.51.100.10 as permitted sender)
+	client-ip=198.51.100.10; envelope-from=hr@corp-vn.example; helo=mail.corp-vn.example;
 Authentication-Results: mx.corp-vn.example;
-	spf=pass (sender IP is 198.51.100.10) smtp.mailfrom=corp-vn.example;
-	dkim=pass header.d=corp-vn.example header.s=mail2026;
-	dmarc=pass action=none header.from=corp-vn.example
+	spf=pass (mx.corp-vn.example: domain of hr@corp-vn.example designates 198.51.100.10 as permitted sender) smtp.mailfrom=hr@corp-vn.example;
+	dkim=pass header.d=corp-vn.example header.s=mail2026 header.b=MIIBIjAN;
+	dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=corp-vn.example
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=corp-vn.example;
-	s=mail2026; h=from:to:subject:date:message-id;
+	s=mail2026; t=1795575000;
+	h=from:to:subject:date:message-id:mime-version:content-type;
 	bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
 	b=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA9p4tQw8Sample06==
 From: "Phong Nhan Su - CorpVN" <hr@corp-vn.example>
@@ -19,20 +28,24 @@ MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="----=_Part_Sample06_Boundary"
 
 ------=_Part_Sample06_Boundary
-Content-Type: text/html; charset=UTF-8
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-<html>
+<!DOCTYPE html>
+<html lang="vi">
 <body>
-  <p>Chao Anh/Chi,</p>
-  <p>Phong Nhan Su gui kem ke hoach kham suc khoe dinh ky nam 2026 (thoi gian tu 05/12 den 12/12/2026).</p>
-  <p>Anh/Chi vui long xem chi tiet khung gio theo phong ban trong file PDF dinh kem va dang ky ca kham tren cong noi bo: <a href="https://portal.corp-vn.example/hr/health-check">https://portal.corp-vn.example/hr/health-check</a></p>
-  <p>Tran trong,<br>Phong Nhan Su — CorpVN</p>
+  <p>Chào Anh/Chị,</p>
+  <p>Phòng Nhân sự gửi kèm kế hoạch khám sức khỏe định kỳ năm 2026 (thời gian từ 05/12 đến 12/12/2026).</p>
+  <p>Anh/Chị vui lòng xem chi tiết khung giờ theo phòng ban trong file PDF đính kèm và đăng ký ca khám trên cổng nội bộ: <a href="https://portal.corp-vn.example/hr/health-check">https://portal.corp-vn.example/hr/health-check</a></p>
+  <p>Trân trọng,<br>Phòng Nhân sự — CorpVN</p>
 </body>
 </html>
 ------=_Part_Sample06_Boundary
-Content-Type: text/plain; name="Lich_Kham_Suc_Khoe_2026.pdf"
+Content-Type: text/plain; charset="UTF-8"; name="Lich_Kham_Suc_Khoe_2026.pdf"
+Content-Transfer-Encoding: 8bit
 Content-Disposition: attachment; filename="Lich_Kham_Suc_Khoe_2026.pdf"
 
-[Tep van ban mo phong phuc vu do an mon hoc - Noi dung PDF lich kham suc khoe]
-Noi dung mo phong lich kham suc khoe dinh ky nam 2026.
+[Tệp văn bản mô phỏng phục vụ đồ án môn học - Nội dung PDF lịch khám sức khỏe]
+Nội dung mô phỏng lịch khám sức khỏe định kỳ năm 2026 của CorpVN.
+Tệp văn bản vô hại phục vụ mô phỏng an toàn (Đề tài 24).
 ------=_Part_Sample06_Boundary--
