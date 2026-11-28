@@ -70,7 +70,7 @@ function inspectReceivedHeaders(receivedHeaders) {
 
   for (let i = 0; i < receivedHeaders.length; i++) {
     const hop = receivedHeaders[i];
-    if (/\b(esmtps|tls|tlsv1(?:\.\d)?|ssl)\b/i.test(hop)) {
+    if (/\b(esmtpsa?|tls[\w.-]*|ssl)\b/i.test(hop)) {
       hasEncryptedHop = true;
     } else if (/\bwith\s+smtp\b(?!s)/i.test(hop)) {
       hasPlaintextHop = true;
